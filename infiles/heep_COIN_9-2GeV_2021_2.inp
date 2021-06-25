@@ -10,10 +10,10 @@ begin parm kinematics_main
   dEbeam = 0.05			;  beam energy variation (%)
   electron_arm = 1              ;  1=hms,2=sos,3=hrsr,4=hrsl,5=shms
   hadron_arm = 5                ;  1=hms,2=sos,3=hrsr,4=hrsl,5=shms
-  spec%e%P = 5.202		;  e arm central momentum (MeV/c)
-  spec%e%theta = 23.40		;  e arm angle setting (degrees)
-  spec%p%P = 4957.		;  p arm central momentum (MeV/c)
-  spec%p%theta = 24.08		;  p arm angle setting (degrees)
+  spec%e%P = 3751.		;  e arm central momentum (MeV/c)
+  spec%e%theta = 31.00		;  e arm angle setting (degrees)
+  spec%p%P = 6265.		;  p arm central momentum (MeV/c)
+  spec%p%theta = 18.46		;  p arm angle setting (degrees)
 end parm kinematics_main
 
 begin parm target
@@ -22,7 +22,7 @@ begin parm target
   targ%mass_amu = 1.007276	;  target mass in amu
   targ%mrec_amu = 0.		;  recoil mass in amu (eep=A-1 system,pion=A-2)
   targ%rho = 0.0723		;  target density (g/cm^3)
-  targ%thick = 286.89		;  target thick (mg/cm^2)
+  targ%thick = 723.00		;  target thick (mg/cm^2) 10.0cm long
   targ%angle = 0.		;  target angle (for solid target) (degrees)
   targ%abundancy = 100.		;  target purity (%)
   targ%can = 2			;  1=beer can (fpi), 2=pudding can (nucpi)
@@ -37,21 +37,21 @@ begin parm debug		;  (ONES give helpful debug info)
 end parm debug
 
 begin parm e_arm_accept
-  SPedge%e%delta%min = -25.0	;  delta min (SPECTROMETER ACCEPTANCE!)
-  SPedge%e%delta%max =  25.0	;  delta max
-  SPedge%e%yptar%min = -60.0	; .yptar.min = {TF} / 1000 (mrad)
-  SPedge%e%yptar%max =  60.0	; .yptar.max = {TF} / 1000
-  SPedge%e%xptar%min = -90.0	; .xptar.min = {TF} / 1000 (mrad)
-  SPedge%e%xptar%max =  90.0	; .xptar.max = {TF} / 1000
+  SPedge%e%delta%min =  -25.0	;  delta min (SPECTROMETER ACCEPTANCE!)
+  SPedge%e%delta%max =   25.0	;  delta max
+  SPedge%e%yptar%min =  -60.0	; .yptar.min = {TF} / 1000 (mrad)
+  SPedge%e%yptar%max =   60.0	; .yptar.max = {TF} / 1000
+  SPedge%e%xptar%min = -125.0	; .xptar.min = {TF} / 1000 (mrad)
+  SPedge%e%xptar%max =  125.0	; .xptar.max = {TF} / 1000
 end parm e_arm_accept
 
 begin parm p_arm_accept
-  SPedge%p%delta%min = -30.0	;  delta min (SPECTROMETER ACCEPTANCE!)
-  SPedge%p%delta%max =  30.0	;  delta max
-  SPedge%p%yptar%min = -60.0	; .yptar.min = {TF} / 1000 (mrad)
-  SPedge%p%yptar%max =  60.0	; .yptar.max = {TF} / 1000
-  SPedge%p%xptar%min = -105.0	; .xptar.min = {TF} / 1000 (mrad)
-  SPedge%p%xptar%max =  105.0	; .xptar.max = {TF} / 1000
+  SPedge%p%delta%min =  -35.0	;  delta min (SPECTROMETER ACCEPTANCE!)
+  SPedge%p%delta%max =   50.0	;  delta max
+  SPedge%p%yptar%min =  -75.0	; .yptar.min = {TF} / 1000 (mrad)
+  SPedge%p%yptar%max =   70.0	; .yptar.max = {TF} / 1000
+  SPedge%p%xptar%min = -100.0	; .xptar.min = {TF} / 1000 (mrad)
+  SPedge%p%xptar%max =   80.0	; .xptar.max = {TF} / 1000
 end parm p_arm_accept
 
 begin parm beamandtargetinfo
@@ -89,7 +89,7 @@ begin parm simulate
   use_expon = 0         ;  (LEAVE AT 0)
   one_tail = 0          ;  0=all, 1=e, 2=e', 3=p, -3=all but p
   intcor_mode = 1       ;  (LEAVE AT 1)
-  spect_mode = -2        ;  0=e+p arms, -1=p arm, -2=e arm only, 1=none
+  spect_mode = 0        ;  0=e+p arms, -1=p arm, -2=e arm only, 1=none
   cuts%Em%min = 0.      ;  (Em.min=Em.max=0.0 gives wide open cuts)
   cuts%Em%max = 0.      ;  Must be wider than cuts in analysis(elastic or e,e'p)
   using_Eloss = 1       ;  (ONE = TRUE)

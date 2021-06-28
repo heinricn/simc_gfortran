@@ -46,7 +46,7 @@ Double_t GetNormFac(TString normfacString)
     Int_t StartIndex = 0;
     
     //find the first number in the string
-    for(Int_t i = 0; i < normfacString.length() && StartIndex == 0; i++)
+    for(Int_t i = 0; i < normfacString.Length() && StartIndex == 0; i++)
     {
         if (normfacString[i] >= '0' && normfacString <= '9') // if ascii is between 0 and 9
         {
@@ -75,7 +75,7 @@ Double_t GetNormFac(TString normfacString)
         exponent = -1*exponent;
     }
     
-    return normfac*Power(10, exponent);
+    return normfac*Power(10.0, exponent);
 }
 
 void SIMC_Summary (TString Filename) //do not include the file extension of input

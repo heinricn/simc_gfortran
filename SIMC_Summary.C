@@ -41,7 +41,7 @@ const Double_t MMIntegralHigh = 0.01;
 const Double_t BeamCurrent = 70.0; //   uA
 const Double_t TotCharge = 1.0; //      mC
 
-Double_t GetNormFac(TString norfacString)
+Double_t GetNormFac(TString normfacString)
 {
     Int_t StartIndex = 0;
     
@@ -78,7 +78,7 @@ Double_t GetNormFac(TString norfacString)
     return normfac*Power(10, exponent);
 }
 
-void SIMC_Summary.C (TString Filename) //do not include the file extension of input
+void SIMC_Summary (TString Filename) //do not include the file extension of input
 {
 
     //root file, for getting the data

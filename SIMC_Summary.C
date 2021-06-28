@@ -30,7 +30,7 @@
 #include <TF1.h>
 #include <fstream>
 
-const Bool_t Debug_Flag = true;
+const Bool_t Debug_Flag = false;
 
 //values we get from the tree
 Float_t Weight, Em, Pm; 
@@ -182,7 +182,20 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     Double_t Rate = counts*normfac/(nEntries*BeamTime); //should be the count rate in Hz
     cout << "Count rate: " << Rate << " Hz\n";
     
+    //draw histograms
+    MMHist->Draw();
+    MMHistIntegral->SetFillStyle(3144);
+    MMHistIntegral->SetFillColor(kBlue);
+    MMHistIntegral->Draw("SAME E0");
     
+    // make legend
+    TLegend *legend = new TLegend(0.1, 0.7, 0.48, 0.9);
+    legend->AddEntry("MMHistIntegral", "Intgrated Peak", "f");
+    legend->AddEntry((TObject*)0, Form("Value of integral: %f", counts), "");
+    
+    legend->Draw();
+    //MMCanvas->WriteObject();
+    return;
 }
 
 

@@ -30,6 +30,8 @@
 #include <TF1.h>
 #include <fstream>
 
+const Boot_t Debug_Flag = true;
+
 //values we get from the tree
 Float_t Weight, Em, Pm; 
 Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
@@ -43,6 +45,9 @@ const Double_t TotCharge = 1.0; //      mC
 
 Double_t GetNormFac(TString normfacString)
 {
+
+    if(Debug_Flag) cout << normfacString << endl;
+    
     Int_t StartIndex = 0;
     
     //find the first number in the string
@@ -56,6 +61,7 @@ Double_t GetNormFac(TString normfacString)
     
     Double_t normfac = 0;
     
+    if(Debug_Flag) cout << normfacString[StartIndex] << endl;
     // I'm just going to hard code this because the output is always in the form: 0.123456E+01
     normfac += (normfacString[StartIndex]-'0');         // should be 0 always
     normfac += (normfacString[StartIndex+2]-'0')/10.0;  // get tenths
@@ -173,7 +179,7 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     cout << "time: " << BeamTime << " s\n";
     
     Double_t Rate = counts*normfac/(nEntries*BeamTime); //should be the count rate in Hz
-    cout << "Count rate: " << Rate << " Hz";
+    cout << "Count rate: " << Rate << " Hz\n";
     
     
 }

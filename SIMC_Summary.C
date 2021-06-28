@@ -30,7 +30,7 @@
 #include <TF1.h>
 #include <fstream>
 
-const Boot_t Debug_Flag = true;
+const Bool_t Debug_Flag = true;
 
 //values we get from the tree
 Float_t Weight, Em, Pm; 

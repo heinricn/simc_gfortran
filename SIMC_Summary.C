@@ -51,13 +51,14 @@ Double_t GetNormFac(TString normfacString)
     Int_t StartIndex = 0;
     
     //find the first number in the string
-    for(Int_t i = 0; i < normfacString.Length() && StartIndex == 0; i++)
+    /*for(Int_t i = 0; i < normfacString.Length() && StartIndex == 0; i++)
     {
         if (normfacString[i] > 47 && normfacString < 58) // if ascii is between 0 (ascii value is 48) and 9 (ascii value is 57) 
         {
             StartIndex = i;
         }
-    }
+    }*/
+    StartIndex = normfacString.First('0'); // fortran sci notation should always start with 0
     
     Double_t normfac = 0;
     

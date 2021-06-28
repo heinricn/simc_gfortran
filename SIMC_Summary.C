@@ -74,10 +74,10 @@ Double_t GetNormFac(TString normfacString)
     
     // now we need to get the exponent
     Int_t exponent = 0;
-    exponent += (normfacString[StartIndex+9]-'0')*10; // tens place
-    exponent += (normfacString[StartIndex+10]-'0');   // ones place
+    exponent += (normfacString[StartIndex+10]-'0')*10; // tens place
+    exponent += (normfacString[StartIndex+11]-'0');   // ones place
     // record if need to flip sign
-    if (normfacString[StartIndex+8] == '-')
+    if (normfacString[StartIndex+9] == '-')
     {
         exponent = -1*exponent;
     }

@@ -96,7 +96,7 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
         return;
     }
     
-    TTree *DataTree = dynamic_cast <TTree*> (RootFile->Get("T")); //get h10 tree from root file
+    TTree *DataTree = dynamic_cast <TTree*> (RootFile->Get("h10")); //get h10 tree from root file
     
     //Assign all of the desired tree values to variables 
     DataTree->SetBranchAddress("Weight", &Weight);

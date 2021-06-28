@@ -176,7 +176,7 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     cout << "ngen: " << nEntries << "\n"; //ngen should always be the total number of events in the ROOTfile
     cout << "normfac: " << normfac << endl;
     
-    Double_t BeamTime = TotCharge/(BeamCurrent*1000); // factor of 1000 to convert from uA to mA
+    Double_t BeamTime = TotCharge/(BeamCurrent/1000); // factor of 1000 to convert from uA to mA
     cout << "time: " << BeamTime << " s\n";
     
     Double_t Rate = counts*normfac/(nEntries*BeamTime); //should be the count rate in Hz

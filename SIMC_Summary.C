@@ -75,7 +75,7 @@ Double_t GetNormFac(TString normfacString)
         exponent = -1*exponent;
     }
     
-    return normfac*Power(10.0, exponent);
+    return normfac*TMath::Power(10.0, exponent);
 }
 
 void SIMC_Summary (TString Filename) //do not include the file extension of input

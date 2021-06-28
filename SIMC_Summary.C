@@ -31,8 +31,8 @@
 #include <fstream>
 
 //values we get from the tree
-Double_t Weight, Em, Pm; 
-Double_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
+Float_t Weight, Em, Pm; 
+Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
 
 // The range for integrating the missing mass peak
 const Double_t MMIntegralLow  = -0.01;

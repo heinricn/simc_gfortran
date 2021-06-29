@@ -40,9 +40,31 @@ Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance vari
 const Double_t MMIntegralLow  = -0.01;
 const Double_t MMIntegralHigh = 0.01;
 
+//acceptance cuts
+const Float_t hsdeltaCutHigh =  8.0;
+const Float_t hsdeltaCutLow  = -8.0;
+
+const Float_t hsxptarCutHigh =  0.080;
+const Float_t hsxptarCutLow  = -0.080;
+
+const Float_t hsyptarCutHigh =  0.035;
+const Float_t hsyptarCutLow  = -0.035;
+
+const Float_t ssdeltaCutHigh =  15;
+const Float_t ssdeltaCutLow  = -15;
+
+const Float_t ssxptarCutHigh =  0.040;
+const Float_t ssxptarCutLow  = -0.040;
+
+const Float_t ssyptarCutHigh =  0.0240;
+const Float_t ssyptarCutLow  = -0.0240;
+
+Bool_t hsdeltaCut, hsxptarCut, hsyptarCut, ssdeltaCut, ssxptarCut, ssyptarCut;
+
 const Double_t BeamCurrent = 70.0; //   uA
 const Double_t TotCharge = 1.0; //      mC
 
+// Converts the line that I get from the 
 Double_t GetNormFac(TString normfacString)
 {
 
@@ -108,9 +130,17 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     //Assign all of the desired tree values to variables 
     DataTree->SetBranchAddress("Weight", &Weight);
     DataTree->SetBranchAddress("Em", &Em); // missing energy
-    DataTree->SetBranchAddress("Pm", &Pm); // missing mass
+    DataTree->SetBranchAddress("Pm", &Pm); // missing momentum
     
-    TCanvas *MMCanvas = new TCanvas("Missing Mass", "Missing Mass "+Filename, 1200, 800);
+    //acceptance variables
+    DataTree->SetBranchAddress("hsdelta", &hsdelta);
+    DataTree->SetBranchAddress("hsxptar", &hsxptar);
+    DataTree->SetBranchAddress("hsyptar", &hsyptar);
+    DataTree->SetBranchAddress("ssdelta", &ssdelta);
+    DataTree->SetBranchAddress("ssxptar", &ssxptar);
+    DataTree->SetBranchAddress("ssyptar", &ssyptar);
+    
+    TCanvas *MMCanvas = new TCanvas(Filename, "Missing Mass "+Filename, 1200, 800);
     TH1D *MMHist = new TH1D ("MMHist", "Missing Mass", 100, -1, 1);
     TH1D *MMHistIntegral = new TH1D ("MMHistIntegral", "Integrated Missing Mass", 100, -1, 1);
     
@@ -119,7 +149,17 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     for(Int_t iEntry = 0; iEntry < nEntries; iEntry++) // event loop
     {
         DataTree->GetEntry(iEntry);
-        Bool_t AcceptanceCuts = true; //for testing
+        
+        //acceptance cuts
+        //Bool_t AcceptanceCuts = true; //for testing
+        hsdeltaCut = (hsdelta < hsdeltaCutHigh && hsdelta > hsdeltaCutLow); 
+        hsxptarCut = (hsxptar < hsxptarCutHigh && hsxptar > hsxptarCutLow); 
+        hsyptarCut = (hsyptar < hsyptarCutHigh && hsyptar > hsyptarCutLow);
+        ssdeltaCut = (ssdelta < ssdeltaCutHigh && ssdelta > ssdeltaCutLow);
+        ssxptarCut = (ssxptar < ssxptarCutHigh && ssxptar > ssxptarCutLow);
+        ssyptarCut = (ssyptar < ssyptarCutHigh && ssyptar > ssyptarCutLow);
+        
+        Bool_t AcceptanceCuts = hsdeltaCut && hsxptarCut && hsyptarCut && ssdeltaCut && ssxptarCut && ssyptarCut;
         
         Double_t MM = Em*Em-Pm*Pm; // calculate missing mass
         
@@ -167,6 +207,10 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
         cout << "File read failed!!!\nDid not find 'normfac' in: "+OutFileName+"\n---Ending---\n";
         return;
     }
+    
+    //close files
+    OutFile.close();
+    RootFile->Close();
     
     //get the value out of the string.
     normfac = GetNormFac(normfacString);

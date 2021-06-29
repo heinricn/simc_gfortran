@@ -186,7 +186,7 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     MMHist->Draw("BAR");
     MMHistIntegral->SetFillStyle(3144);
     MMHistIntegral->SetFillColor(kBlue);
-    MMHistIntegral->Draw("SAME E3");
+    MMHistIntegral->Draw("SAME BAR");
     
     // make legend
     TLegend *legend = new TLegend(0.1, 0.75, 0.30, 0.9);

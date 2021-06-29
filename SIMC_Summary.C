@@ -183,7 +183,7 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     cout << "Count rate: " << Rate << " Hz\n";
     
     //draw histograms
-    MMHist->Draw("COLZ");
+    MMHist->Draw("BAR");
     MMHistIntegral->SetFillStyle(3144);
     MMHistIntegral->SetFillColor(kBlue);
     MMHistIntegral->Draw("SAME E3");

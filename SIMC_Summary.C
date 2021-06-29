@@ -238,8 +238,8 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     //MMCanvas->WriteObject();
     
     //close files
-    OutFile.close();
-    RootFile->Close();
+    //OutFile.close();
+    //RootFile->Close();
     return;
 }
 

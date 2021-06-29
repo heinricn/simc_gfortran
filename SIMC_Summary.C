@@ -208,9 +208,6 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
         return;
     }
     
-    //close files
-    OutFile.close();
-    RootFile->Close();
     
     //get the value out of the string.
     normfac = GetNormFac(normfacString);
@@ -239,6 +236,10 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     
     legend->Draw();
     //MMCanvas->WriteObject();
+    
+    //close files
+    OutFile.close();
+    RootFile->Close();
     return;
 }
 

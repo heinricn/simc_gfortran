@@ -183,13 +183,13 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     cout << "Count rate: " << Rate << " Hz\n";
     
     //draw histograms
-    MMHist->Draw();
+    MMHist->Draw("LEGO");
     MMHistIntegral->SetFillStyle(3144);
     MMHistIntegral->SetFillColor(kBlue);
-    MMHistIntegral->Draw("SAME");
+    MMHistIntegral->Draw("SAME E3");
     
     // make legend
-    TLegend *legend = new TLegend(0.1, 0.7, 0.48, 0.9);
+    TLegend *legend = new TLegend(0.1, 0.75, 0.30, 0.9);
     legend->AddEntry("MMHistIntegral", "Intgrated Peak", "f");
     legend->AddEntry((TObject*)0, Form("Value of integral: %f", counts), "");
     

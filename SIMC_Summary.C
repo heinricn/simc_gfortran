@@ -59,8 +59,6 @@ const Float_t ssxptarCutLow  = -0.040;
 const Float_t ssyptarCutHigh =  0.0240;
 const Float_t ssyptarCutLow  = -0.0240;
 
-Bool_t hsdeltaCut, hsxptarCut, hsyptarCut, ssdeltaCut, ssxptarCut, ssyptarCut;
-
 const Double_t BeamCurrent = 70.0; //   uA
 const Double_t TotCharge = 1.0; //      mC
 
@@ -107,7 +105,9 @@ Double_t GetNormFac(TString normfacString)
     return normfac*TMath::Power(10.0, exponent);
 }
 
-void SIMC_Summary (TString Filename) //do not include the file extension of input
+//do not include the file extension of input. 
+//spectrometer input is: 'C' for coin, 'S' for SHMS, 'H' for HMS, 'N' for no cuts
+void SIMC_Summary (TString Filename, TString SPEC_FLAG) 
 {
 
     //root file, for getting the data
@@ -144,6 +144,10 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
     TH1D *MMHist = new TH1D ("MMHist", "Missing Mass", 100, -1, 1);
     TH1D *MMHistIntegral = new TH1D ("MMHistIntegral", "Integrated Missing Mass", 100, -1, 1);
     
+    //acceptance cuts
+    Bool_t hsdeltaCut, hsxptarCut, hsyptarCut, ssdeltaCut, ssxptarCut, ssyptarCut;
+    Bool_t HMSAcceptanceCut, SHMSAcceptanceCut;
+    
     // Loop over all events in the Root file
     Int_t nEntries = DataTree->GetEntries();
     for(Int_t iEntry = 0; iEntry < nEntries; iEntry++) // event loop
@@ -155,11 +159,28 @@ void SIMC_Summary (TString Filename) //do not include the file extension of inpu
         hsdeltaCut = (hsdelta < hsdeltaCutHigh && hsdelta > hsdeltaCutLow); 
         hsxptarCut = (hsxptar < hsxptarCutHigh && hsxptar > hsxptarCutLow); 
         hsyptarCut = (hsyptar < hsyptarCutHigh && hsyptar > hsyptarCutLow);
+        
         ssdeltaCut = (ssdelta < ssdeltaCutHigh && ssdelta > ssdeltaCutLow);
         ssxptarCut = (ssxptar < ssxptarCutHigh && ssxptar > ssxptarCutLow);
         ssyptarCut = (ssyptar < ssyptarCutHigh && ssyptar > ssyptarCutLow);
         
-        Bool_t AcceptanceCuts = hsdeltaCut && hsxptarCut && hsyptarCut && ssdeltaCut && ssxptarCut && ssyptarCut;
+        //Statement for picking which 
+        if ( SPEC_FLAG == "C"){
+            HMSAcceptanceCut = hsdeltaCut && hsxptarCut && hsyptarCut;
+            SHMSAcceptanceCut = ssdeltaCut && ssxptarCut && ssyptarCut;
+        } else if ( SPEC_FLAG == "H") {
+            HMSAcceptanceCut = hsdeltaCut && hsxptarCut && hsyptarCut;
+            SHMSAcceptanceCut = true;
+        } else if ( SPEC_FLAG == "S") {
+            HMSAcceptanceCut = true;
+            SHMSAcceptanceCut = ssdeltaCut && ssxptarCut && ssyptarCut;
+        } else {
+            HMSAcceptanceCut = true;
+            SHMSAcceptanceCut = true;
+        }
+        
+        
+        Bool_t AcceptanceCuts = HMSAcceptanceCut && SHMSAcceptanceCut;
         
         Double_t MM = Em*Em-Pm*Pm; // calculate missing mass
         

@@ -1,0 +1,8 @@
+PROJECT: c-kaonlt
+TRACK: analysis
+JOBNAME: PionLT_SIMC_heep_HMS_6-4GeV_T15_P5_2022
+DISK_SPACE: 50 GB
+MEMORY: 3000 MB
+CPU: 1
+COMMAND:'/group/c-kaonlt/USERS/heinricn/simc_gfortran/batch/make_summary.sh heep_HMS_6-4GeV_T15_P5_2022'
+MAIL: heinricn@jlab.org

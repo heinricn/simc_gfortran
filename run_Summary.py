@@ -26,17 +26,20 @@ for ikin in input_list:
         ikin = ikin.strip() 
 
         #define shell script command
-        #run_simc_cmd = "./run_simc %s " % (ikin)
-        #print(run_simc_cmd)
+        run_simc_cmd = "./run_simc_tree %s " % (ikin)
+        print(run_simc_cmd)
 
         #execute shell script command to run simulation for ikin
-        #os.system(run_simc_cmd)
+        os.system(run_simc_cmd)
 
         #define command to convert ASCII file to ROOTfile
-        if(ikin.find("SHMS") != -1):
-           run_fmake_cmd = "root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C(\"%s\", \"S\")' " % (ikin) 
-        else:
-           run_fmake_cmd = "echo 'done'" # "root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C(\"%s\", \"H\")' " % (ikin)
+        if(ikin.find("COIN") != -1):
+           run_fmake_cmd = "root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C(\"\%s\",\"C\")' " % (ikin)
+        else: 
+            if(ikin.find("SHMS") != -1):
+                run_fmake_cmd = "root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C(\"%s\", \"S\")' " % (ikin) 
+            else:
+                run_fmake_cmd = "root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C(\"%s\", \"H\")' " % (ikin)
         
         print(run_fmake_cmd)
 

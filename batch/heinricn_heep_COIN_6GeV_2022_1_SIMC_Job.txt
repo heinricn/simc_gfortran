@@ -1,0 +1,8 @@
+PROJECT: c-kaonlt
+TRACK: analysis
+JOBNAME: PionLT_SIMC_heep_COIN_6GeV_2022_1
+DISK_SPACE: 50 GB
+MEMORY: 3000 MB
+CPU: 1
+COMMAND:'/group/c-kaonlt/USERS/heinricn/simc_gfortran/batch/make_summary.sh heep_COIN_6GeV_2022_1'
+MAIL: heinricn@jlab.org

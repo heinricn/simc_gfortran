@@ -1,0 +1,338 @@
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T10-3_P5-4_2021", "S")...
+counts: 0.0118106
+ngen: 100000
+normfac: 5.02823e+06
+time: 14.2857 s
+Count rate: 0.0415705 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T11-75_P5-1_2021", "S")...
+counts: 0.0254633
+ngen: 100000
+normfac: 7.58975e+06
+time: 14.2857 s
+Count rate: 0.135282 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-4_2021", "S")...
+counts: 0.0417358
+ngen: 100000
+normfac: 8.28761e+06
+time: 14.2857 s
+Count rate: 0.242123 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-7_2021", "S")...
+counts: 0.034242
+ngen: 100000
+normfac: 8.27597e+06
+time: 14.2857 s
+Count rate: 0.19837 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-2_2021", "S")...
+counts: 0.034242
+ngen: 100000
+normfac: 8.27597e+06
+time: 14.2857 s
+Count rate: 0.19837 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-4_2021", "S")...
+counts: 0.0237815
+ngen: 100000
+normfac: 8.25055e+06
+time: 14.2857 s
+Count rate: 0.137348 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-6_2021", "S")...
+counts: 0.0210561
+ngen: 100000
+normfac: 8.24512e+06
+time: 14.2857 s
+Count rate: 0.121527 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T13-60_P5-4_2021", "S")...
+counts: 0.0409616
+ngen: 100000
+normfac: 8.82748e+06
+time: 14.2857 s
+Count rate: 0.253111 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T15-60_P4-6_2021", "S")...
+counts: 0.134093
+ngen: 100000
+normfac: 9.59614e+06
+time: 14.2857 s
+Count rate: 0.900745 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T17-60_P4-6_2021", "S")...
+counts: 0.242996
+ngen: 100000
+normfac: 1.00563e+07
+time: 14.2857 s
+Count rate: 1.71055 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T19-80_P4-6_2021", "S")...
+counts: 0.415124
+ngen: 100000
+normfac: 1.0349e+07
+time: 14.2857 s
+Count rate: 3.00728 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T23-40_P3-4_2021", "S")...
+counts: 1.02495
+ngen: 100000
+normfac: 1.05643e+07
+time: 14.2857 s
+Count rate: 7.57949 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T27-40_P3-4_2021", "S")...
+counts: 2.72878
+ngen: 100000
+normfac: 1.07384e+07
+time: 14.2857 s
+Count rate: 20.5119 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T29-35_P3-4_2021", "S")...
+counts: 4.35263
+ngen: 100000
+normfac: 1.07848e+07
+time: 14.2857 s
+Count rate: 32.8595 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-3_P5-4_2021", "S")...
+counts: 0.000622488
+ngen: 100000
+normfac: 4.84477e+06
+time: 14.2857 s
+Count rate: 0.00211107 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-75_P5-5_2021", "S")...
+counts: 0.00071379
+ngen: 100000
+normfac: 5.24153e+06
+time: 14.2857 s
+Count rate: 0.00261895 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T8-30_P5-5_2021", "S")...
+counts: 0.000859831
+ngen: 100000
+normfac: 5.59616e+06
+time: 14.2857 s
+Count rate: 0.00336823 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T9-55_P5-5_2021", "S")...
+counts: 0.00309768
+ngen: 100000
+normfac: 5.09957e+06
+time: 14.2857 s
+Count rate: 0.0110578 Hz
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T10-3_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T11-75_P5-1_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-7_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-2_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T13-60_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T15-60_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T17-60_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T19-80_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T23-40_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T27-40_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T29-35_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-3_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-75_P5-5_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T8-30_P5-5_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T9-55_P5-5_2021", "S")' 
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+done
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T10-3_P5-4_2021", "S")...
+counts: 13751.1
+ngen: 100000
+normfac: 1.05934e+07
+time: 14.2857 s
+Count rate: 101969 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T11-75_P5-1_2021", "S")...
+counts: 5141.02
+ngen: 100000
+normfac: 1.04126e+07
+time: 14.2857 s
+Count rate: 37471.9 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-4_2021", "S")...
+File read failed!!!
+Did not find 'normfac' in: outfiles/heep_SHMS_6-0GeV_T12-35_P4-4_2021.hist
+---Ending---
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-7_2021", "S")...
+File read failed!!!
+Did not find 'normfac' in: outfiles/heep_SHMS_6-0GeV_T12-35_P4-7_2021.hist
+---Ending---
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-2_2021", "S")...
+File read failed!!!
+Did not find 'normfac' in: outfiles/heep_SHMS_6-0GeV_T12-35_P5-2_2021.hist
+---Ending---
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-4_2021", "S")...
+counts: 3342.4
+ngen: 100000
+normfac: 1.03919e+07
+time: 14.2857 s
+Count rate: 24313.7 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-6_2021", "S")...
+counts: 3302.49
+ngen: 100000
+normfac: 1.01912e+07
+time: 14.2857 s
+Count rate: 23559.5 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T13-60_P5-4_2021", "S")...
+counts: 1525.79
+ngen: 100000
+normfac: 1.0193e+07
+time: 14.2857 s
+Count rate: 10886.7 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T15-60_P4-6_2021", "S")...
+counts: 529.46
+ngen: 100000
+normfac: 1.01535e+07
+time: 14.2857 s
+Count rate: 3763.11 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T17-60_P4-6_2021", "S")...
+counts: 183.809
+ngen: 100000
+normfac: 1.04185e+07
+time: 14.2857 s
+Count rate: 1340.51 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T19-80_P4-6_2021", "S")...
+counts: 64.5154
+ngen: 100000
+normfac: 1.01391e+07
+time: 14.2857 s
+Count rate: 457.89 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T23-40_P3-4_2021", "S")...
+counts: 16.5986
+ngen: 100000
+normfac: 9.47054e+06
+time: 14.2857 s
+Count rate: 110.039 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T27-40_P3-4_2021", "S")...
+counts: 4.45614
+ngen: 100000
+normfac: 1.03679e+07
+time: 14.2857 s
+Count rate: 32.3405 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T29-35_P3-4_2021", "S")...
+counts: 2.40897
+ngen: 100000
+normfac: 1.0128e+07
+time: 14.2857 s
+Count rate: 17.0786 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-3_P5-4_2021", "S")...
+counts: 157998
+ngen: 100000
+normfac: 1.03458e+07
+time: 14.2857 s
+Count rate: 1.14423e+06 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-75_P5-5_2021", "S")...
+counts: 105462
+ngen: 100000
+normfac: 1.05215e+07
+time: 14.2857 s
+Count rate: 776729 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T8-30_P5-5_2021", "S")...
+counts: 65648.4
+ngen: 100000
+normfac: 1.05623e+07
+time: 14.2857 s
+Count rate: 485379 Hz
+
+Processing /u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T9-55_P5-5_2021", "S")...
+counts: 23955.5
+ngen: 100000
+normfac: 1.06299e+07
+time: 14.2857 s
+Count rate: 178251 Hz
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+echo 'done'
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T10-3_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T11-75_P5-1_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P4-7_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-2_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T12-35_P5-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T13-60_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T15-60_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T17-60_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T19-80_P4-6_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T23-40_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T27-40_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T29-35_P3-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-3_P5-4_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T7-75_P5-5_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T8-30_P5-5_2021", "S")' 
+root -b -q -l '/u/group/c-kaonlt/USERS/heinricn/simc_gfortran/SIMC_Summary.C("heep_SHMS_6-0GeV_T9-55_P5-5_2021", "S")' 

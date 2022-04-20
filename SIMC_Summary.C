@@ -37,8 +37,8 @@ Float_t Weight, Em, Pm;
 Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
 
 // The range for integrating the missing mass peak
-const Double_t MMIntegralLow  = -0.01;
-const Double_t MMIntegralHigh = 0.01;
+const Double_t MMIntegralLow  = 0.00; //matches online from 2021
+const Double_t MMIntegralHigh = 0.05;
 
 //acceptance cuts
 const Float_t hsdeltaCutHigh =  8.0;
@@ -50,8 +50,8 @@ const Float_t hsxptarCutLow  = -0.080;
 const Float_t hsyptarCutHigh =  0.035;
 const Float_t hsyptarCutLow  = -0.035;
 
-const Float_t ssdeltaCutHigh =  15;
-const Float_t ssdeltaCutLow  = -15;
+const Float_t ssdeltaCutHigh =  20;
+const Float_t ssdeltaCutLow  = -10;
 
 const Float_t ssxptarCutHigh =  0.040;
 const Float_t ssxptarCutLow  = -0.040;
@@ -191,7 +191,7 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
             MMHist->Fill(MM, Weight); // fill weigthed histogram for missing mass
             
             // create a histogram that will be filled in on plot to represent the integral
-            if(MM < MMIntegralHigh && MM > MMIntegralLow)
+            if((MM < MMIntegralHigh && MM > MMIntegralLow) || (SPEC_FLAG != "C")) // don't cut on missing mass for singles events
             {
                 MMHistIntegral->Fill(MM, Weight);
             }

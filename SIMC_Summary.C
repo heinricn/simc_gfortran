@@ -37,7 +37,7 @@ Float_t Weight, Em, Pm;
 Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
 
 // The range for integrating the missing mass peak
-const Double_t MMIntegralLow  = 0.00; //matches online from 2021
+const Double_t MMIntegralLow  = -0.01; //matches online from 2021
 const Double_t MMIntegralHigh = 0.05;
 
 //acceptance cuts
@@ -50,8 +50,8 @@ const Float_t hsxptarCutLow  = -0.080;
 const Float_t hsyptarCutHigh =  0.035;
 const Float_t hsyptarCutLow  = -0.035;
 
-const Float_t ssdeltaCutHigh =  20;
-const Float_t ssdeltaCutLow  = -10;
+const Float_t ssdeltaCutHigh =  15;
+const Float_t ssdeltaCutLow  = -15;
 
 const Float_t ssxptarCutHigh =  0.040;
 const Float_t ssxptarCutLow  = -0.040;
@@ -59,7 +59,7 @@ const Float_t ssxptarCutLow  = -0.040;
 const Float_t ssyptarCutHigh =  0.0240;
 const Float_t ssyptarCutLow  = -0.0240;
 
-const Double_t BeamCurrent = 70.0; //   uA
+const Double_t BeamCurrent = 1.0; //   uA
 const Double_t TotCharge = 1.0; //      mC
 
 // Converts the line that I get from the 

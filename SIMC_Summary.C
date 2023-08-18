@@ -33,7 +33,7 @@
 const Bool_t Debug_Flag = false;
 
 //values we get from the tree
-Float_t Weight, Em, Pm; 
+Float_t Weight, Em, Pm, Tr, Ti; 
 Float_t hsdelta, hsxptar, hsyptar, ssdelta, ssxptar, ssyptar; // acceptance variables
 
 // The range for integrating the missing mass peak
@@ -131,6 +131,8 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     DataTree->SetBranchAddress("Weight", &Weight);
     DataTree->SetBranchAddress("Em", &Em); // missing energy
     DataTree->SetBranchAddress("Pm", &Pm); // missing momentum
+    DataTree->SetBranchAddress("ti", &Ti); // t-true
+    DataTree->SetBranchAddress("t", &Tr); // t-recon
     
     //acceptance variables
     DataTree->SetBranchAddress("hsdelta", &hsdelta);
@@ -140,9 +142,9 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     DataTree->SetBranchAddress("ssxptar", &ssxptar);
     DataTree->SetBranchAddress("ssyptar", &ssyptar);
     
-    TCanvas *MMCanvas = new TCanvas(Filename, "Missing Mass "+Filename, 1200, 800);
-    TH1D *MMHist = new TH1D ("MMHist", "Missing Mass", 100, -1, 1);
-    TH1D *MMHistIntegral = new TH1D ("MMHistIntegral", "Integrated Missing Mass", 100, -1, 1);
+    TH1D *MMHist = new TH1D ("MMHist", "Missing Mass", 200, -1, 5);
+    TH1D *MMHistIntegral = new TH1D ("MMHistIntegral", "Integrated Missing Mass", 200, -1, 5);
+    TH2D *TvTi = new TH2D("TvTi", "T_recon vrs T_true", 100, 0, 3, 100, 0, 3);
     
     //acceptance cuts
     Bool_t hsdeltaCut, hsxptarCut, hsyptarCut, ssdeltaCut, ssxptarCut, ssyptarCut;
@@ -187,7 +189,7 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
         //cut on acceptance variables
         if(AcceptanceCuts)
         {
-            
+            TvTi->Fill(Tr,Ti,Weight);
             MMHist->Fill(MM, Weight); // fill weigthed histogram for missing mass
             
             // create a histogram that will be filled in on plot to represent the integral
@@ -244,6 +246,8 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     Double_t Rate = counts*normfac/(nEntries*BeamTime); //should be the count rate in Hz
     cout << "Count rate: " << Rate << " Hz\n";
     
+    TCanvas *MMCanvas = new TCanvas(Filename, "Missing Mass "+Filename, 1200, 800);
+    
     //draw histograms
     MMHist->Draw("BAR");
     MMHistIntegral->SetFillStyle(3144);
@@ -256,7 +260,14 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     legend->AddEntry((TObject*)0, Form("Value of integral: %f", counts), "");
     
     legend->Draw();
-    //MMCanvas->WriteObject();
+    MMCanvas->Print("output/"+Filename+".pdf(","Missing Mass");
+    
+    
+    TCanvas *tCanvas = new TCanvas(Filename, "TvTi "+Filename, 1200, 800);
+    TvTi->Draw("BAR");
+    TvTi->GetXaxis()->SetNameTitle("T_Recon (GeV^{2})","T_Recon (GeV^{2})")
+    TvTi->GetYaxis()->SetNameTitle("T_True (GeV^{2})","T_True (GeV^{2})")
+    tCanvas->Print("output/"+Filename+".pdf)","T_Recon V T_True");
     
     //close files
     //OutFile.close();

@@ -2,7 +2,7 @@
 ; this is for p(e,e*pi+)n kinematics for Q^2= 4.000 GeV^2    W= 2.100 GeV
 
 begin parm experiment
-  ngen = 100000              ;  POS: # of successes; NEG: # of tries
+  ngen = 50000              ;  POS: # of successes; NEG: # of tries
   EXPER%charge = 1.0         ;  total charge (mC)
   doing_phsp = 0             ;  (ONE = TRUE)
   doing_kaon = 0             ;  (ONE = TRUE)

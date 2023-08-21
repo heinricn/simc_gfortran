@@ -144,7 +144,8 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     
     TH1D *MMHist = new TH1D ("MMHist", "Missing Mass", 200, -1, 5);
     TH1D *MMHistIntegral = new TH1D ("MMHistIntegral", "Integrated Missing Mass", 200, -1, 5);
-    TH2D *TvTi = new TH2D("TvTi", "T_recon vrs T_true", 100, 0, 3, 100, 0, 3);
+    TH1D *TTi = new TH1D ("t-ti", "t - t_{truth}", 200, -1, 1);
+    TH2D *TvTi = new TH2D("TvTi", "t vrs t_{true}", 100, 0, 2, 100, 0, 2);
     
     //acceptance cuts
     Bool_t hsdeltaCut, hsxptarCut, hsyptarCut, ssdeltaCut, ssxptarCut, ssyptarCut;
@@ -190,6 +191,7 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
         if(AcceptanceCuts)
         {
             TvTi->Fill(Tr,Ti,Weight);
+	    TTi->Fill(Tr-Ti,Weight);
             MMHist->Fill(MM, Weight); // fill weigthed histogram for missing mass
             
             // create a histogram that will be filled in on plot to represent the integral
@@ -249,25 +251,38 @@ void SIMC_Summary (TString Filename, TString SPEC_FLAG)
     TCanvas *MMCanvas = new TCanvas(Filename, "Missing Mass "+Filename, 1200, 800);
     
     //draw histograms
+    MMHist->Scale(normfac/nEntries);
     MMHist->Draw("BAR");
+    MMHist->SetStats(0);
     MMHistIntegral->SetFillStyle(3144);
     MMHistIntegral->SetFillColor(kBlue);
-    MMHistIntegral->Draw("SAME BAR");
-    
+    //MMHistIntegral->Draw("SAME BAR");
+    MMHistIntegral->SetStats(0);
+
     // make legend
     TLegend *legend = new TLegend(0.1, 0.75, 0.30, 0.9);
     legend->AddEntry("MMHistIntegral", "Intgrated Peak", "f");
     legend->AddEntry((TObject*)0, Form("Value of integral: %f", counts), "");
     
     legend->Draw();
-    MMCanvas->Print("output/"+Filename+".pdf(","Missing Mass");
+    MMCanvas->Print("outfiles/"+Filename+".pdf(","Missing Mass");
     
     
-    TCanvas *tCanvas = new TCanvas(Filename, "TvTi "+Filename, 1200, 800);
-    TvTi->Draw("BAR");
-    TvTi->GetXaxis()->SetNameTitle("T_Recon (GeV^{2})","T_Recon (GeV^{2})")
-    TvTi->GetYaxis()->SetNameTitle("T_True (GeV^{2})","T_True (GeV^{2})")
-    tCanvas->Print("output/"+Filename+".pdf)","T_Recon V T_True");
+    TCanvas *tCanvas = new TCanvas("TvTi" +Filename, "TvTi "+Filename, 1200, 800);
+    TvTi->Scale(normfac/nEntries);
+    TvTi->Draw("Colz");
+    TvTi->GetXaxis()->SetNameTitle("-t (GeV^{2})","-t (GeV^{2})");
+    TvTi->GetYaxis()->SetNameTitle("-t_{truth} (GeV^{2})","-t_{truth} (GeV^{2})");
+    TvTi->SetStats(0);
+    tCanvas->Print("outfiles/"+Filename+".pdf","T_Recon V T_True");
+    
+    TCanvas *tCanvas1 = new TCanvas("TTi" +Filename, "TTi "+Filename, 1200, 800);
+    TTi->Scale(normfac/nEntries);
+    TTi->Draw("hist");
+    TTi->GetXaxis()->SetNameTitle("t-t_{truth} (GeV^{2})","t-t_{truth} (GeV^{2})");
+    TTi->GetYaxis()->SetNameTitle("Events (1/mC)","Events (1/mC)");
+    TTi->SetStats(0);
+    tCanvas1->Print("outfiles/"+Filename+".pdf)","T_Recon V T_True");
     
     //close files
     //OutFile.close();

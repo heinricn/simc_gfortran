@@ -1,9 +1,10 @@
 	subroutine limits_update(main,vertex,orig,recon,doing_deuterium,
      >		doing_pion,doing_kaon,doing_delta,doing_rho,contrib,slop)
 
+	USE structureModule
 	implicit none
 
-	include 'structures.inc'
+c	include 'structures.inc'
 	include 'radc.inc'
 	type(event_main):: main
 	type(event):: vertex, orig, recon
@@ -71,19 +72,19 @@
 
 ! Update the "slop limits" records
 ! ... MC slops
-	call update_range(main%RECON%e%delta-main%SP%e%delta,slop%MC%e%delta)
-	call update_range(main%RECON%e%yptar-main%SP%e%yptar,slop%MC%e%yptar)
-	call update_range(main%RECON%e%xptar-main%SP%e%xptar,slop%MC%e%xptar)
-	call update_range(main%RECON%p%delta-main%SP%p%delta,slop%MC%p%delta)
-	call update_range(main%RECON%p%yptar-main%SP%p%yptar,slop%MC%p%yptar)
-	call update_range(main%RECON%p%xptar-main%SP%p%xptar,slop%MC%p%xptar)
+	call update_slop_range(main%RECON%e%delta-main%SP%e%delta,slop%MC%e%delta)
+	call update_slop_range(main%RECON%e%yptar-main%SP%e%yptar,slop%MC%e%yptar)
+	call update_slop_range(main%RECON%e%xptar-main%SP%e%xptar,slop%MC%e%xptar)
+	call update_slop_range(main%RECON%p%delta-main%SP%p%delta,slop%MC%p%delta)
+	call update_slop_range(main%RECON%p%yptar-main%SP%p%yptar,slop%MC%p%yptar)
+	call update_slop_range(main%RECON%p%xptar-main%SP%p%xptar,slop%MC%p%xptar)
 
 ! %.. total slops
 ! ........ that tricky shift again, slops accounted for by the shift not
 ! ........ included in slop.total.Em.
-	call update_range(recon%Em-(orig%Em-main%Ein_shift+main%Ee_shift),
+	call update_slop_range(recon%Em-(orig%Em-main%Ein_shift+main%Ee_shift),
      >		slop%total%Em)
-	call update_range(abs(recon%Pm)-abs(orig%Pm), slop%total%Pm)
+	call update_slop_range(abs(recon%Pm)-abs(orig%Pm), slop%total%Pm)
 
 	return
 	end
@@ -92,12 +93,28 @@
 
 	subroutine update_range(val,range)
 
-	include 'structures.inc'
+	use structureModule
+c	include 'structures.inc'
 	type(rangetype):: range
 	real*8	val
 
 	range%lo = min(range%lo, val)
 	range%hi = max(range%hi, val)
+
+	return
+	end
+
+!-------------------------------------------------------------------
+
+	subroutine update_slop_range(val,sloprange)
+
+	use structureModule
+c	include 'structures.inc'
+	type(slop_item):: sloprange
+	real*8	val
+
+	sloprange%lo = min(sloprange%lo, val)
+	sloprange%hi = max(sloprange%hi, val)
 
 	return
 	end
@@ -108,6 +125,7 @@
 
 	subroutine generate(main,vertex,orig,success)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 
@@ -413,6 +431,7 @@ C DJG spectrometer
 
 	subroutine complete_ev(main,vertex,success)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 
@@ -425,15 +444,17 @@ C DJG spectrometer
 	real*8 oop_x,oop_y
 	real*8 krel,krelx,krely,krelz
 	real*8 MM
-
+	real*8 diffmin
+	real*8 w,w2,prob,probtot,probsum(1000),mass_save(1000)
 	real*8 Ehad2,E_rec
-	real*8 W2
-	real*8 grnd		!random # generator.
+	real*8 grnd,rn		!random # generator.
+	real*8 v1(4), Mgamma, costh, phi,mchk
+	integer i
 
 	logical success
 	type(event_main):: main
 	type(event)::	vertex
-
+	logical first/.true./
 !-----------------------------------------------------------------------
 ! Calculate everything left in the /event/ structure, given all necessary
 !  GENERATION values (some set of xptar,yptar,delta for both arms and p_fermi,
@@ -448,6 +469,30 @@ C DJG spectrometer
 !-----------------------------------------------------------------------
 
 ! Initialize
+
+! PB: generate Delta(1232) shape using mss 1.2298, width 0.135
+! PB: made width narrower 0.105 9/5/2022
+! PB: distribution is truncated on low mass side at P + pi mass
+c PB: 9/5/22 changed to use actual Breit-Wigner shape generated
+c PB: from resmod507 in first call to semi_physics.f
+	if((which_pion.eq.2 .or. which_pion.eq.3).and.first) then
+	   open(unit=55,file='delta_relativistic_bw.inp')
+	   probtot = 0. 
+	   do i=1,1000
+	      w = sqrt(1.055) + 0.6 * float(i) / 1000
+	      w2 = w**2
+	      read(55,'(f8.3,f12.5)') w,prob
+	      mass_save(i) = w
+	      probtot = probtot + prob
+	      probsum(i) = probtot
+	   enddo
+	   do i=1,1000
+	      probsum(i) = probsum(i) / probtot
+	      if((i/50)*50.eq.i) write(6,'(''Delta'',i5,2f8.3)')
+     >   	   i,mass_save(i),probsum(i)
+	   enddo
+	   first = .false.
+	endif
 
 	success = .false.
 	main%jacobian = 1.0
@@ -574,7 +619,16 @@ c	  endif
 C DJG If doing Deltas final state for pion production, generate Delta mass
 	  if(which_pion.eq.2 .or. which_pion.eq.3) then
 c factor of 0.7265 to better match data (PB)
-	     targ%Mrec_struck = Mdelta + 0.5*(0.7265)*Delta_width*tan((2.*grnd()-1.)*pi/2.)
+c	     targ%Mrec_struck = Mdelta + 0.5*(0.7265)*Delta_width*tan((2.*grnd()-1.)*pi/2.)
+C switch to relativistic BW for Delta
+	     rn = grnd()
+	     diffmin = 10000.
+	     do i=1,1000
+		if(abs(rn - probsum(i)).lt.diffmin) then
+		   diffmin = abs(rn - probsum(i))
+		   targ%Mrec_struck = mass_save(i) * 1000. ! in MeV
+		endif
+	     enddo
 	  endif
 
 	  vertex%Pm = pfer	!vertex%Em generated at beginning.
@@ -590,7 +644,7 @@ c factor of 0.7265 to better match data (PB)
 ! acceptance.  If the low momentum solution IS within the acceptance, we
 ! have big problems.
 	  if (doing_deutpi.or.doing_hepi.or.doing_deutkaon.or.doing_hekaon.or.
-     >        doing_deutdelta.or.doing_hedelta) then
+     >        doing_deutdelta.or.doing_hedelta.or.doing_herho) then
 	    a = a - abs(pfer)*(pferx*vertex%up%x+pfery*vertex%up%y+pferz*vertex%up%z)
 	    b = b + pfer**2 + 2*vertex%q*abs(pfer)*
      >  	 (pferx*vertex%uq%x+pfery*vertex%uq%y+pferz*vertex%uq%z)
@@ -602,26 +656,27 @@ c factor of 0.7265 to better match data (PB)
 	  QA = 4.*(a**2 - c**2)
 	  QB = 4.*c*t
 	  QC = -4.*a**2*Mh2 - t**2
-
+	  
 !	write(6,*) '    '
 !	write(6,*) '    '
-!	write(6,*) 'E0=',vertex.Ein
-!	write(6,*) 'P_elec,P_prot=',vertex.e.P/1000.,vertex.p.P/1000.
-!	write(6,*) 'thetae,phie=',vertex.e.theta*180./pi,vertex.e.phi*180./pi
-!	write(6,*) 'thetap,phip=',vertex.p.theta*180./pi,vertex.p.phi*180./pi
-!	write(6,*) 'q,nu,costhetapq=',vertex.q,vertex.nu,(vertex.uq.x*vertex.up.x+vertex.uq.y*vertex.up.y+vertex.uq.z*vertex.up.z)
+!	write(6,*) 'E0=',vertex%Ein
+!	write(6,*) 'P_elec,P_prot=',vertex%e%P/1000.,vertex%p%P/1000.
+!	write(6,*) 'thetae,phie=',vertex%e%theta*180./pi,vertex%e%phi*180./pi
+!	write(6,*) 'thetap,phip=',vertex%p%theta*180./pi,vertex%p%phi*180./pi
+!	write(6,*) 'q,nu,costhetapq=',vertex%q,vertex%nu,(vertex%uq%x*vertex%up%x+vertex%uq%y*vertex%up%y+vertex%uq%z*vertex%up%z)
 !	write(6,*) 'a,b,c=',a/1000.,b/1000000.,c/1000.
 !	write(6,*) 't=',t/1000000.
 !	write(6,*) 'A,B,C=',QA/1.d6,QB/1.d9,QC/1.d12
 !	write(6,*) 'rad=',QB**2 - 4.*QA*QC
 !	write(6,*) 'e1,e2=',(-QB-sqrt(radical))/2000./QA,(-QB+sqrt(radical))/2000./QA
-!	write(6,*) 'E_pi1,2=',vertex.nu+targ.M-(-QB-sqrt(radical))/2./QA,
-!     >				vertex.nu+targ.M-(-QB+sqrt(radical))/2./QA
+!	write(6,*) 'E_pi1,2=',(-QB-sqrt(radical))/2./QA,
+!     >		              (-QB+sqrt(radical))/2./QA
 
 
 	  radical = QB**2 - 4.*QA*QC
 	  if (radical.lt.0) return
 	  vertex%p%E = (-QB - sqrt(radical))/2./QA
+	  if(vertex%p%E.lt.0.0) return
 	  Ehad2 = (-QB + sqrt(radical))/2./QA
 
 	  if (doing_delta) then		!choose one of the two solutions.
@@ -647,7 +702,7 @@ c factor of 0.7265 to better match data (PB)
 	   call generate_rho(vertex,success)  !generate rho in 4pi in CM
 	   if(.not.success) then
 	      return
-	   else  ! we have a success, but set back to false for rest of complete_ev
+	   else  ! we have a success, but set back to false for rest of complete_ev until rho_decay is called
 	      success=.false.
 	   endif
 
@@ -841,6 +896,9 @@ CDJG Calculate the "Collins" (phi_pq+phi_targ) and "Sivers"(phi_pq-phi_targ) ang
 
 	  endif !polarized-target specific azimuthal angles
 
+	  if(doing_pizero) then ! now need to decay the pizero into 2 photons
+	     call pizero_decay(vertex,success,ntup%gamma1,ntup%gamma2)
+	  endif
 
 	endif		!end of pion/kaon specific stuff.
 
@@ -888,8 +946,8 @@ CDJG Calculate the "Collins" (phi_pq+phi_targ) and "Sivers"(phi_pq-phi_targ) ang
 	  vertex%Trec = sqrt(vertex%Mrec**2 + vertex%Pm**2) - vertex%Mrec
 	else if (doing_hydpi .or. doing_hydkaon .or. doing_hyddelta .or. doing_hydrho) then
 	  vertex%Trec = 0.0
-	else if (doing_deutpi.or.doing_hepi.or.doing_deutkaon.or.doing_hekaon
-     >       .or.doing_deutdelta.or.doing_hedelta.or.doing_deutrho.or.doing_herho) then
+	else if (doing_deutpi.or.doing_hepi.or.doing_deutkaon.or.doing_hekaon.or.doing_deutdelta
+     >	    .or.doing_hedelta.or.doing_deutrho.or.doing_herho) then
 	  vertex%Trec = sqrt(vertex%Mrec**2 + vertex%Pm**2) - vertex%Mrec
 	else if (doing_semi) then
 	   vertex%Pm = vertex%Pmiss
@@ -997,6 +1055,7 @@ C DJG stinkin' Jacobian!
 
 	subroutine complete_recon_ev(recon,success)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 
@@ -1303,6 +1362,8 @@ CDJG Calculate the "Collins" (phi_pq+phi_targ) and "Sivers"(phi_pq-phi_targ) ang
 
 	subroutine complete_main(force_sigcc,main,vertex,vertex0,recon,success)
 
+	USE structureModule
+
 	implicit none
 	include 'simulate.inc'
 
@@ -1398,19 +1459,37 @@ CDJG Calculate the "Collins" (phi_pq+phi_targ) and "Sivers"(phi_pq-phi_targ) ang
 	  main%sigcc = peepi(vertex,main)
 C Use Clebsch-Gordon coefficients to approximate xsec for Delta final states
 C This ignores the fact that the g*p and g*n cross sections may not be the same
-	  if(which_pion.eq.2) then ! pi+ Delta
+C 6/24/2021: Coefficients for Delta final states updated from Peter Bosted's
+C empirical check's.
+	  if(which_pion.eq.2) then ! g* p -> pi+ Delta0, g* n  -> pi+ Delta-, or g* p -> pi0 Delta+ 
 	     if(doing_hydpi) then
-		main%sigcc = main%sigcc/4.0 !(pi+ Delta0)/(pi+ n)
+		if (doing_pizero) then
+		   main%sigcc = 0.55*main%sigcc ! g* p -> pi0 Delta+
+		else
+		   main%sigcc = 0.4*main%sigcc !(pi+ Delta0)/(pi+ n) updated 17july2023
+		endif
 	     elseif(doing_deutpi) then
-		main%sigcc = main%sigcc/4.0 !(pi+ Delta0)/pi+ n)
-     >                      + 0.75*main%sigcc !(pi+ Delta-)/(pi+ n)
+		if (doing_pizero) then
+		   main%sigcc = 0.55*main%sigcc ! g* p -> pi0 Delta+
+		else
+		   main%sigcc = 0.4*main%sigcc !(pi+ Delta0)/pi+ n)   updated 17july2023
+     >                      + 0.8*main%sigcc !(pi+ Delta-)/(pi+ n)
+		endif
 	     endif 
-	  elseif (which_pion.eq.3) then  !pi- Delta
+	  elseif (which_pion.eq.3) then  !g* p->pi- Delta++, g* n-> pi- Delta+, or g* n -> pi0 Delta0
 	     if(doing_hydpi) then
-		main%sigcc = 3.0*main%sigcc/5.0 ! (pi- Delta++)/(pi- p)
+		if(doing_pizero) then
+		   main%sigcc = 0 ! can't do gamma* n -> pi0 Delta0 for hydpi
+		else
+		   main%sigcc = 0.55*main%sigcc ! (pi- Delta++)/(pi- p)  updated 17july2023
+		endif
 	     elseif(doing_deutpi) then
-		main%sigcc = 3.0*main%sigcc/5.0 ! (pi- Delta++)/(pi- p)
-     >                     + 0.25*main%sigcc !(pi- Delta+)/(pi- p)
+		if(doing_pizero) then
+		   main%sigcc = 0.99*main%sigcc !g* n -> pi0 Delta0
+		else
+		   main%sigcc = 0.55*main%sigcc ! (pi- Delta++)/(pi- p)  updated 17july2023
+     >                     + 0.99*main%sigcc !(pi- Delta+)/(pi- p)
+		endif
 	     endif
 	  endif
 	  main%sigcc_recon = 1.0
@@ -1441,7 +1520,7 @@ C This ignores the fact that the g*p and g*n cross sections may not be the same
 	elseif (doing_semi) then
 	  main%sigcc = peepiX(vertex,vertex0,main,survivalprob,.FALSE.)
 	  main%sigcc_recon = 1.0
-	  main%sigcent = peepiX(vertex,vertex0,main,survivalprob,.TRUE.)
+c	  main%sigcent = peepiX(vertex,vertex0,main,survivalprob,.TRUE.)
 c	  ntup%dilu = semi_dilution(vertex,main) 
 	  ntup%dilu = 1.0
 
@@ -1567,3 +1646,84 @@ C If using Coulomb corrections, include focusing factor
 
 	return
 	end
+
+C SUBROUTINE TO DECAY A PARTICLE INTO TWO OTHER PARTICLES
+C AT angle COSTH in THE C.M. FRAME WHERE THE DIRECTION OF THE
+C INITIAL PARTICLE NEED NOT BE ALONG THE Z-AXIS. PHI SHOULD BE 0 TO 2 PI
+C vectors are (E, px, py, pz)
+      SUBROUTINE DECAY (V1,V2,V3,M1,M2,M3,COSTH,PHI)
+      IMPLICIT NONE
+      REAL*8 V1(4),V2(4),V3(4),KV(4),M1,M2,M3,V1P,G,K,COSTH,SINTH,PHI
+      REAL*8 CHK,CHK1,CHK2,KCHK,BETA,VT(4),VTT(4),VDM
+! Find magnitude of momentum of initial particle
+      V1P=SQRT(V1(2)**2+V1(3)**2+V1(4)**2)
+      G=V1(1)/M1
+      BETA=V1P/V1(1)
+
+! Find c.m. momentum and pick decay isotropically
+      K=SQRT(( ((M1**2-M2**2-M3**2)/2.)**2 - (M2*M3)**2 )/M1**2)
+      KCHK=SQRT((M1**2-(M2+M3)**2)*(M1**2-(M2-M3)**2))/2./M1
+      IF(ABS(K-KCHK).GT.0.001) WRITE(6,'(1X,''ERROR,K,KCHK='',2F10.4)')
+     >  K,KCHK
+      IF(ABS(SQRT(K*K+M2*M2)+SQRT(K*K+M3*M3)-M1).GT.0.001)
+     >  WRITE(6,'(1X,''ERROR IN CM ENERGY'')')
+      SINTH=SQRT(1.-COSTH**2)
+! Put k into vector for first decay particle
+      KV(1)=SQRT(K*K+M2*M2)
+      KV(2)=K*SINTH*COS(PHI)
+      KV(3)=K*SINTH*SIN(PHI)
+      KV(4)=K*COSTH
+! Transform k to lab frame for first decay particle
+! First find vector as though decay were along Z axis
+      V2(1)=G*(KV(1)+BETA*KV(4))
+      VT(2)=KV(2)
+      VT(3)=KV(3)
+      VT(4)=G*(BETA*KV(1)+KV(4))
+! Now rotate vector in xz plane
+      VDM=SQRT(V1(2)**2+V1(4)**2)
+      VTT(2)= VT(2)*V1(4)/VDM+VT(4)*V1(2)/VDM
+      VTT(3)= VT(3)
+      VTT(4)=-VT(2)*V1(2)/VDM+VT(4)*V1(4)/VDM
+! Now rotate vector in yz plane
+      VDM=SQRT(V1(3)**2+V1(4)**2)
+      V2(2)= VTT(2)
+      V2(3)= VTT(3)*V1(4)/VDM + VTT(4)*V1(3)/VDM
+      V2(4)=-VTT(3)*V1(3)/VDM + VTT(4)*V1(4)/VDM
+! Transform k to lab frame for first  decay particle
+      CHK=V2(1)**2-V2(2)**2-V2(3)**2-V2(4)**2-M2**2
+      IF(ABS(CHK).GT.0.005) WRITE(6,'(1X,''ERROR, CHK='',E9.2)') CHK
+! Put k into vector for second decay particle
+      KV(1)=SQRT(K*K+M3*M3)
+      KV(2)=-K*SINTH*COS(PHI)
+      KV(3)=-K*SINTH*SIN(PHI)
+      KV(4)=-K*COSTH
+! Transform k to lab frame for second decay particle
+! First find vector as though decay were along Z axis
+      V3(1)=G*(KV(1)+BETA*KV(4))
+      VT(2)=KV(2)
+      VT(3)=KV(3)
+      VT(4)=G*(BETA*KV(1)+KV(4))
+! Now rotate vector in xz plane
+      VDM=SQRT(V1(2)**2+V1(4)**2)
+      VTT(2)= VT(2)*V1(4)/VDM+VT(4)*V1(2)/VDM
+      VTT(3)= VT(3)
+      VTT(4)=-VT(2)*V1(2)/VDM+VT(4)*V1(4)/VDM
+! Now rotate vector in yz plane
+      VDM=SQRT(V1(3)**2+V1(4)**2)
+      V3(2)= VTT(2)
+      V3(3)= VTT(3)*V1(4)/VDM + VTT(4)*V1(3)/VDM
+      V3(4)=-VTT(3)*V1(3)/VDM + VTT(4)*V1(4)/VDM
+      CHK=V3(1)**2-V3(2)**2-V3(3)**2-V3(4)**2-M3**2
+      IF(ABS(CHK).GT.0.005) WRITE(6,'(1X,''ERROR, CHK='',E9.2)') CHK
+      CHK1=V1(1)-V2(1)-V3(1)
+      CHK2=V1(2)-V2(2)-V3(2)+V1(3)-V2(3)-V3(3)+V1(4)-V2(4)-V3(4)
+	IF(ABS(CHK1).GT.0.005.OR.ABS(CHK2).GT.0.05) then
+c	WRITE(6,
+c       >  '(1X,''E12='',14F5.2)') CHK1,CHK2,V1,V2,V3
+	   write(6,*) 'total energy: ',V1(1), chk1
+	   write(6,*) 'Px: ',V1(2)-V2(2)-V3(2)
+	   write(6,*) 'Py: ',V1(3)-V2(3)-V3(3)
+	   write(6,*) 'Pz: ',V1(4)-V2(4)-V3(4)
+	endif
+      RETURN
+      END

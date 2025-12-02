@@ -7,10 +7,12 @@
 !		T. G. O'Neill (Argonne National Lab), and
 !		Seemingly Countless Others (Virtually Everywhere).
 !
+	USE structureModule
+	USE histoModule
 	implicit none
 !	include 'simulate_init.inc'
 	include 'simulate.inc'
-	include 'histograms_init.inc'
+!	include 'histograms_init.inc'
 	include 'radc.inc'
 	include 'hbook.inc'
 	include 'sos/struct_sos.inc'
@@ -621,8 +623,9 @@ c	  write(7,*) 'BP thingie in/out     ',shmsSTOP_BP_in,shmsSTOP_BP_out
 
 	subroutine inc(hist,val,weight)
 
+	USE histoModule
 	implicit none
-	include 'histograms.inc'
+c	include 'histograms.inc'
 
 	integer*4		ibin
 	real*8			val, weight
@@ -641,6 +644,7 @@ c	  write(7,*) 'BP thingie in/out     ',shmsSTOP_BP_in,shmsSTOP_BP_out
 	subroutine report(iun,timestring1,timestring2,central,contrib,
      >		sum_sigcc,aveerr,resol)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 	include 'radc.inc'
@@ -684,6 +688,12 @@ c	  write(7,*) 'BP thingie in/out     ',shmsSTOP_BP_in,shmsSTOP_BP_out
 		    write(iun,*) ' ****--------  D(e,e''pi+)X  --------****'
 		 else
 		    write(iun,*) ' ****--------  D(e,e''pi-)X  --------****'
+		 endif
+	      elseif (targ%A .ge. 3) then
+		 if(doing_hplus) then
+		    write(iun,*) ' ****--------  A(e,e''pi+)X  --------****'
+		 else
+		    write(iun,*) ' ****--------  A(e,e''pi-)X  --------****'
 		 endif
 	      else
 		 stop 'I don''t have ANY idea what A(e,e''pi)X we''re doing!!!'
@@ -866,12 +876,12 @@ c	  write(7,*) 'BP thingie in/out     ',shmsSTOP_BP_in,shmsSTOP_BP_out
      >		'doing_kaon', doing_kaon, 'doing_pion', doing_pion
 	write(iun,'(5x,3(2x,a19,''='',l2))') 'doing_semi', doing_semi,
      >		'doing_rho', doing_rho, 'doing_hplus', doing_hplus
-	write(iun,'(5x,2(2x,a19,''='',l2))') 'doing_semipi',doing_semipi,
-     >		'doing_semika', doing_semika
+	write(iun,'(5x,3(2x,a19,''='',l2))') 'doing_semipi',doing_semipi,
+     >		'doing_semika', doing_semika, 'doing_pizero',doing_pizero
 	write(iun,'(5x,2(2x,a19,''='',l2))') 'doing_delta',doing_delta,
      >		'doing_phsp', doing_phsp
-	write(iun,'(5x,2(2x,a19,''='',i2))') 'which_pion', which_pion,
-     >		'which_kaon', which_kaon
+	write(iun,'(5x,3(2x,a19,''='',i2))') 'which_pion', which_pion,
+     >		'which_kaon', which_kaon, 'pizero_ngamma',pizero_ngamma
 	write(iun,'(5x,3(2x,a19,''='',l2))') 'doing_hyd_elast', doing_hyd_elast,
      >		'doing_deuterium', doing_deuterium, 'doing_heavy', doing_heavy
 	write(iun,'(5x,3(2x,a19,''='',l2))') 'doing_hydpi', doing_hydpi,
@@ -1132,6 +1142,7 @@ c	  write(7,*) 'BP thingie in/out     ',shmsSTOP_BP_in,shmsSTOP_BP_out
 
 	subroutine calculate_central(central,vertex0)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 	include 'radc.inc'
@@ -1275,9 +1286,19 @@ c	enddo
 	central%sigcc = main0%sigcc
 
 	if(doing_semi) then
-	   write(6,*) 'central event'
+	   write(6,*) 'SIDIS: central event kinematics'
 	   write(6,*) 'Pt',sqrt(vertex0%pt2)/1.e3
 	   write(6,*) 'z', vertex0%zhad
+	   write(6,*) 'thpq', vertex0%theta_pq*180.0/3.1415926536
+	   write(6,*) 'Q2', vertex0%Q2
+	   write(6,*) 'xbj', vertex0%xbj
+	   write(6,*) 'Ein', vertex0%Ein
+	   write(6,*) 'A', targ%A
+	   write(6,*) 'Eprime',vertex0%e%E
+	   write(6,*) 'Ppi',vertex0%p%P
+	   write(6,*) 'The',vertex0%e%theta
+
+	   write(6,*) 'multiplicity',ntup%sigcm
 	   write(6,*) 'lab cross section (nb/Gev2/sr2)',central%sigcc*1000.0*1000.0*1000.0
 	endif
 	if (debug(2)) write(6,*)'calc_cent: ending...'
@@ -1288,6 +1309,7 @@ c	enddo
 
 	subroutine montecarlo(orig,main,recon,success)
 
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 
@@ -1295,10 +1317,12 @@ c	enddo
 
 	real*8 x_E_arm,y_E_arm,z_E_arm,dx_E_arm,dy_E_arm,delta_E_arm
 	real*8 x_P_arm,y_P_arm,z_P_arm,dx_P_arm,dy_P_arm,delta_P_arm
+	real*8 xtar_init_P, xtar_init_E
 	real*8 xfp, yfp, dxfp, dyfp
 	real*8 eloss_E_arm, eloss_P_arm, r, beta, dangles(2), dang_in(2)
 	logical success
 	logical ok_E_arm, ok_P_arm
+	logical ok_gamma1, ok_gamma2
 	type(event):: orig, recon
 	type (event_main)::	main
 
@@ -1313,7 +1337,7 @@ c	enddo
 	real*8 dx_tmp,dy_tmp
 
 	real*8 ctheta,stheta,phad,pelec
-	real*8 zhadron
+	real*8 zhadron,exrot1,eyrot1,ezrot1,exrot2,eyrot2,ezrot2
 
 	real*8 zero
 	parameter (zero=0.0e0)	!double precision zero for subroutine calls
@@ -1408,20 +1432,13 @@ c	   write(*,*) 'sign_hms_part =' ,sign_hms_part
           endif 
 ! GAW - end 99/11/3
 
-C DJG need to decay the rho here before we begin transporting through the
-C DJG spectrometer
-c	  m2 = Mh2
-c	  if(doing_rho) then
-c	     call rho_decay(dx_P_arm,dy_P_arm,delta_P_arm,spec.p.P,m2,
-c	1	  main.epsilon,orig.Q2)
-c	  endif
-C DJG moved this to the last part of generate!!!
 
 ! ........ drift this position back to z=0, the plane through the target center
 
 	  x_P_arm = x_P_arm - z_P_arm*dx_P_arm
 	  y_P_arm = y_P_arm - z_P_arm*dy_P_arm
 	  z_P_arm = 0.0
+	  xtar_init_P=x_P_arm
 
 	  main%SP%p%z=y_P_arm
 
@@ -1447,7 +1464,7 @@ C DJG moved this to the last part of generate!!!
 	    call mc_hms(spec%p%P, spec%p%theta, delta_P_arm, x_P_arm,
      >		y_P_arm, z_P_arm, dx_P_arm, dy_P_arm, xfp, dxfp, yfp, dyfp,
      >		m2, mc_smear, mc_smear, doing_decay,
-     >		ntup%resfac, fry, ok_P_arm, pathlen)
+     >		ntup%resfac, xtar_init_P, ok_P_arm, pathlen, using_HMScoll)
 	  else if (hadron_arm.eq.2) then
 	    call mc_sos(spec%p%P, spec%p%theta, delta_P_arm, x_P_arm,
      >		y_P_arm, z_P_arm, dx_P_arm, dy_P_arm, xfp, dxfp, yfp, dyfp,
@@ -1467,9 +1484,84 @@ C DJG moved this to the last part of generate!!!
 	    call mc_shms(spec%p%P, spec%p%theta, delta_P_arm, x_P_arm,
      >		y_P_arm, z_P_arm, dx_P_arm, dy_P_arm, xfp, dxfp, yfp, dyfp,
      >		m2, mc_smear, mc_smear, doing_decay,
-     >		ntup%resfac, fry, ok_P_arm, pathlen, hadron_arm, use_first_cer)
-	  endif
+     >		ntup%resfac, xtar_init_P, ok_P_arm, pathlen, hadron_arm, 
+     >    using_SHMScoll)
+	 else if (hadron_arm.eq.7 .or. hadron_arm.eq.8) then
+	    if (doing_pizero) then ! call mc_calo twice - once for each photon
+	       ok_gamma1=.false.
+	       ok_gamma2=.false.
 
+c rotate from lab w/z along beam to frame w/z pointing to center of calorimeter
+
+	       if (hadron_arm.eq.8) then
+		  exrot1=ntup%gamma1(2)
+		  eyrot1=ntup%gamma1(3)*cos(spec%p%theta)-ntup%gamma1(4)*sin(spec%p%theta)
+		  ezrot1=ntup%gamma1(3)*sin(spec%p%theta)+ntup%gamma1(4)*cos(spec%p%theta)
+		  
+		  exrot2=ntup%gamma2(2)
+		  eyrot2=ntup%gamma2(3)*cos(spec%p%theta)-ntup%gamma2(4)*sin(spec%p%theta)
+		  ezrot2=ntup%gamma2(3)*sin(spec%p%theta)+ntup%gamma2(4)*cos(spec%p%theta)
+	       else
+		  exrot1=ntup%gamma1(2)
+		  eyrot1=ntup%gamma1(3)*cos(spec%p%theta)+ntup%gamma1(4)*sin(spec%p%theta)
+		  ezrot1=-ntup%gamma1(3)*sin(spec%p%theta)+ntup%gamma1(4)*cos(spec%p%theta)
+
+		  exrot2=ntup%gamma2(2)
+		  eyrot2=ntup%gamma2(3)*cos(spec%p%theta)+ntup%gamma2(4)*sin(spec%p%theta)
+		  ezrot2=-ntup%gamma2(3)*sin(spec%p%theta)+ntup%gamma2(4)*cos(spec%p%theta)
+	       endif
+	       
+c first photon	       
+	       dx_p_arm = exrot1/ezrot1
+	       dy_p_arm = eyrot1/ezrot1
+
+	       call mc_calo(spec%p%p, spec%p%theta, delta_p_arm, x_p_arm,
+     >		y_p_arm, z_p_arm, dx_p_arm, dy_p_arm, xfp, dxfp, yfp, dyfp,
+     >		m2, mc_smear, mc_smear, doing_decay,
+     >		ntup%resfac, frx, fry, ok_gamma1, pathlen, using_tgt_field,
+     >          zhadron,hadron_arm,drift_to_cal)
+
+	       ntup%xcal_gamma1=-1.0d10
+	       ntup%ycal_gamma1=-1.0d10
+	       if(ok_gamma1) then
+		  ntup%xcal_gamma1=xfp
+		  ntup%ycal_gamma1=yfp
+	       endif
+
+c second photon	       
+	       dx_p_arm = exrot2/ezrot2
+	       dy_p_arm = eyrot2/ezrot2
+	       
+	       call mc_calo(spec%p%p, spec%p%theta, delta_p_arm, x_p_arm,
+     >		y_p_arm, z_p_arm, dx_p_arm, dy_p_arm, xfp, dxfp, yfp, dyfp,
+     >		m2, mc_smear, mc_smear, doing_decay,
+     >		ntup%resfac, frx, fry, ok_gamma2, pathlen, using_tgt_field,
+     >          zhadron,hadron_arm,drift_to_cal)
+
+	       ntup%xcal_gamma2=-1.0d10
+	       ntup%ycal_gamma2=-1.0d10
+	       if(ok_gamma2) then
+		  ntup%xcal_gamma2=xfp
+		  ntup%ycal_gamma2=yfp
+	       endif
+
+c needs to initialize here since not initialized in mc_calo (like in other single arm MC's)	       
+	       ok_P_arm=.false.
+	       if(pizero_ngamma.eq.2) then
+		  if(ok_gamma1 .and. ok_gamma2) ok_P_arm=.true. !require both photons
+	       elseif(pizero_ngamma.eq.1) then
+		  if(ok_gamma1 .or. ok_gamma2) ok_P_arm=.true. !require only one photon
+	       else
+		  stop 'pizero_ngamma not set correctly (should be 1 or 2), stopping'
+	       endif
+	    else ! if not doing pizero, just need to call once
+	       call mc_calo(spec%p%p, spec%p%theta, delta_p_arm, x_p_arm,
+     >		y_p_arm, z_p_arm, dx_p_arm, dy_p_arm, xfp, dxfp, yfp, dyfp,
+     >		m2, mc_smear, mc_smear, doing_decay,
+     >		ntup%resfac, frx, fry, ok_P_arm, pathlen, using_tgt_field,
+     >          zhadron,hadron_arm,drift_to_cal)
+	    endif
+	 endif
 
 C DJG Do polarized target field stuff if needed
 C DJG Note that the call to track_to_tgt is with -fry: for some reason that routine then
@@ -1509,6 +1601,13 @@ C DJG For spectrometers to the left of the beamline, need to pass ctheta,-stheta
 	  main%FP%p%y = yfp
 	  main%FP%p%dy = dyfp
 	  main%FP%p%path = pathlen
+
+	  if(doing_pizero) then ! no pi0 reconstruction yet, but now complete_recon_ev will work
+	     main%RECON%p%delta = main%SP%p%delta
+	     main%RECON%p%yptar = main%SP%p%yptar
+	     main%RECON%p%xptar = main%SP%p%xptar
+	  endif
+	  
 
 ! CASE 2: Not using the detailed Monte Carlo, just copy the IN event to the
 ! OUT record
@@ -1606,6 +1705,7 @@ C	  recon%p%delta = (recon%p%P-spec%p%P)/spec%p%P*100.
 	  x_E_arm = x_E_arm - z_E_arm*dx_E_arm
 	  y_E_arm = y_E_arm - z_E_arm*dy_E_arm
 	  z_E_arm = 0.0
+	  xtar_init_E = x_E_arm
 
 	  main%SP%e%z=y_E_arm
 
@@ -1630,7 +1730,7 @@ C	  recon%p%delta = (recon%p%P-spec%p%P)/spec%p%P*100.
 	    call mc_hms(spec%e%P, spec%e%theta, delta_E_arm, x_E_arm,
      >		y_E_arm, z_E_arm, dx_E_arm, dy_E_arm, xfp, dxfp, yfp, dyfp,
      >		me2, mc_smear, mc_smear, .false.,
-     >		tmpfact, fry, ok_E_arm, pathlen)
+     >		tmpfact, xtar_init_E, ok_E_arm, pathlen,using_HMScoll)
 	  else if (electron_arm.eq.2) then
 	    call mc_sos(spec%e%P, spec%e%theta, delta_E_arm, x_E_arm,
      >		y_E_arm, z_E_arm, dx_E_arm, dy_E_arm, xfp, dxfp, yfp, dyfp,
@@ -1650,7 +1750,8 @@ C	  recon%p%delta = (recon%p%P-spec%p%P)/spec%p%P*100.
 	    call mc_shms(spec%e%P, spec%e%theta, delta_E_arm, x_E_arm,
      >		y_E_arm, z_E_arm, dx_E_arm, dy_E_arm, xfp, dxfp, yfp, dyfp,
      >		me2, mc_smear, mc_smear, .false.,
-     >		tmpfact, fry, ok_E_arm, pathlen, electron_arm, use_first_cer)
+     >		tmpfact, xtar_init_E, ok_E_arm, pathlen, electron_arm, 
+     >          using_SHMScoll)
 	  else if (electron_arm.eq.7 .or. electron_arm .eq. 8) then
              if (abs(spec%p%phi-pi/2) .eq. 10.) then
 	     zhadron = -recon%p%z*(cos(spec%p%theta)/tan(spec%p%theta+recon%p%yptar)+sin(spec%p%theta)) ! recon.p.z is really ytgt

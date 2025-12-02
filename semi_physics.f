@@ -50,7 +50,7 @@
 * Add Peter Bosted's fit for pion fragmenetation functions from Hall C 2018-2019 data
 
 
-
+	USE structureModule
 	implicit none
 	include 'simulate.inc'
 
@@ -70,7 +70,7 @@
 	real*8 Ns, a1s, a2s !parameters for strange FF param
 
 C Some local kinematic variables
-	real*8 xbj,sx, Q2gev, Qgev, pt2gev !unitless or GeV
+	real*8 xbj,sx, Q2gev, Qgev, pt2gev,mtargev,nugev !unitless or GeV
 	real*8 b  ! pt2 parameter for FFs
 
 	real*8 nu,qx,qy,qz,mtar,Q2,Eb,Eprime,Epx,Epy,Epz  !MeV
@@ -82,9 +82,15 @@ C Some local kinematic variables
 
 	real*8 sum_sq, dsigdz, sigsemi, jacobian, fac, sigma_eepiX
 	real*8 sighad, sige
+	real*8 targA,targZ,targN
+	real*8 uA,ubarA,dA,dbarA,sA,sbarA
 
-	real*8 F1,F2,W1,W2,sin2th2,cos2th2,W2coeff
-	real*8 Ctq5Pdf	
+	real*8 q2qe,w2qe
+	integer wfn
+	real*8 F1,F2,FL,W1,W2,sin2th2,cos2th2,W2coeff
+	real*8 F1n,F2n,F1p,F2p
+	real*8 Ctq5Pdf
+	real*8 slacemcfit,Rhad_global
 c	external Ctq5Pdf
 
 C Variables for kaon decay stuff
@@ -93,15 +99,23 @@ C Variables for kaon decay stuff
 
 c parameters for PB fit of 9/11/2020
 c versus zp
-       real*8 pf(8)/   1.2803,   0.0851,   0.8379,   0.1586,
-     >                 0.0140,   0.2133,  -4.4985,   4.1285/
-       real*8 pu(8)/   0.8290,  -0.1416,   0.9869,   0.2559,
-     >                 0.0090,  -1.2306,  -1.5292,   2.4169/
+c       real*8 pf(8)/   1.2803,   0.0851,   0.8379,   0.1586,
+c     >                 0.0140,   0.2133,  -4.4985,   4.1285/
+c       real*8 pu(8)/   0.8290,  -0.1416,   0.9869,   0.2559,
+c     >                 0.0090,  -1.2306,  -1.5292,   2.4169/
+C parameters for PB fit of 9/20/2021
+	real*8 pf(12)/ 1.0424,  -0.1714,   1.8960,  -0.0307,
+     >                 0.1636,  -0.1272,  -4.2093,   5.0103,
+     >                 2.7406,  -0.5778,   3.5292,   7.3910/
+	real*8 pu(12)/ 0.7840,   0.2369,   1.4238,   0.1484,
+     >                 0.1518,  -1.2923,  -1.5710,   3.0305,
+     >                 1.1995,   1.3553,   2.5868,   8.0666/
+
 	real*8 xp,zp,yf,yu
-	real*8 Mpi_gev, Mp_gev, wsq, z8, a8
+	real*8 Mpi_gev, Mp_gev, wsq,w, mmpi2,z8, a8
 	real*8 d1,db,u1,ub, s1, sb, dsigdzn, dsigdzp
 
-	logical first
+	logical first, firstqe
 	logical doing_cent,first_cent! flag for "central" cross section calc.
 
 	parameter (iset=1)
@@ -116,6 +130,7 @@ c	parameter (b=4.68)   !GeV^-2
 	parameter (Q2zero=2.0)   !Gev^2 for u,d,s,g
 
 	data first /.TRUE./
+	data firstqe /.TRUE./
 	data first_cent /.TRUE./
 
 c this is for DSS
@@ -124,9 +139,14 @@ c this is for DSS
         COMMON / FRAGINI / FINI
 
 	if(first) FINI=0
-	b = pt_b_param   ! now parameter in input file
+c	b = pt_b_param   ! now parameter in input file
 
+	targA=targ%A
+	targZ=targ%Z
+	targN=targA-targZ
+	
 	Mpi_gev = Mpi/1000.0
+	if(doing_pizero) Mpi_gev = Mpi0/1000.0
 	Mp_gev = Mp/1000.0
 C DJG: Setup stuff for doing "central" cross section calculation.  Here, I'm
 C DJG: assuming we want the cross section at some "point" in Q2 and W space.
@@ -168,7 +188,6 @@ C DJG: I can just ignore it.
 		 if(vertex%pt2.gt.klo .and. vertex%pt2.le.khi) then
 		    pt2 = klo + (khi-klo)/2.
 		 endif
-c		 write(6,*) 'chessy poofs',pt2,klo,khi
 	      enddo
 	   endif
 
@@ -177,6 +196,7 @@ c		 write(6,*) 'chessy poofs',pt2,klo,khi
 	      write(6,*) 'Ebeam (GeV):',Eb/1000
 	      write(6,*) 'nu (GeV)   :',nu/1000
 	      write(6,*) 'Q2 (GeV2)  :',Q2/1e6
+	      write(6,*) 'theta_pq   :',main%theta_pq
 	      if(sigc_flag.eq.0) then
 		 write(6,*) 'Pt2 (GeV2) :',pt2/1e6
 		 write(6,*) 'Binning in z from',sigc_kin_min,
@@ -249,6 +269,32 @@ C DJG convert some stuff to GeV
 	Qgev = sqrt(Q2gev)
 	pt2gev = pt2/1.e6
 
+	wsq = Mp_gev**2 + q2gev * (1./xbj -1.)
+	w = sqrt(wsq)
+c added that xsection should be zero below 2pi / piK  threshold (PB)
+C this shouldn't be necessary, but include it anyway
+	mtargev = mtar/1000.
+	nugev = nu/1000.
+        mmpi2 = mtargev**2 + 2. * mtargev * nugev * 
+     >        (1-zhad) * (1 - pt2gev)
+	if(mmpi2 .lt. (mtargev + mhad/1000.)**2) then
+         sigma_eepiX = 0.
+	 peepiX = 0.0
+	 return
+	endif
+
+
+c needed by f1f2in21
+	if(firstqe) then
+c	 write(6,*) 'Initializing F1F2IN21:'  
+c	 write(6,*) 'F1F2IN21: calling sqesub'
+	 q2qe=1.
+	 w2qe=1.
+	 wfn=2
+         call sqesub(w2qe,q2qe,wfn,f1,f2,fL,firstqe)
+	 firstqe=.false.
+	endif
+
 C Get the PDFs
 	if(first) then
 	   call SetCtq5(iset)	! initialize Cteq5 (we're using cteq5m)
@@ -273,12 +319,14 @@ C Get the PDFs
 	ipart=-3
 	sbar = Ctq5pdf (ipart , xbj, Qgev)
 
-	sum_sq = qu**2*(u+ubar) + qd**2*(d+dbar) + qs**2*(s+sbar)
-	   
-	if (doing_deutsemi) then
-	   sum_sq = sum_sq + qu**2*(d+dbar) + qd**2*(u+ubar) + qs**2*(s+sbar)
-	endif
+	uA = targZ*u + targN*d
+        ubarA = targZ*ubar + targN*dbar
+        dA = targZ*d + targN*u
+        dbarA = targZ*dbar + targN*ubar
+        sA = targZ*s + targN*s
+        sbarA = targZ*sbar + targN*sbar
 
+        sum_sq = qu**2*(uA+ubarA) + qd**2*(dA+dbarA) + qs**2*(sA+sbarA)
 
 C Simple paramaterization from Kretzer et al (EPJC 22 p. 269)
 C for Q2=2.5.
@@ -419,12 +467,14 @@ c new PB fit using zp for pions. This is z * D
      >           sqrt(1 - 4 * xbj**2 * Mp_gev**2 *  
      >           (Mpi_gev**2 + pt2gev) / zhad**2 / q2gev**2))
 	   sv = log(q2gev/2.)
-	   yf = pf(1) * zp**(pf(2) + pf(4)*sv) * 
-     >          (1.-zp)**(pf(3) + pf(5)*sv) 
-	   yf = yf * (1. + pf(6)*zp + pf(7)*zp**2 + pf(8)*zp**3)
-	   yu = pu(1) * zp**(pu(2) + pu(4)*sv) * 
-     >          (1.-zp)**(pu(3) + pu(5)*sv) 
-	   yu = yu * (1. + pu(6)*zp + pu(7)*zp**2 + pu(8)*zp**3)
+	   yf = pf(1) * zp**(pf(2) + pf(4)*sv + pf(9)/w) * 
+     >          (1.-zp)**(pf(3) + pf(5)*sv + pf(10)/w) 
+	   yf = yf * (1. + pf(6)*zp + pf(7)*zp**2 + pf(8)*zp**3) *
+     >               (1. + pf(11)/w + pf(12)/w**2)
+	   yu = pu(1) * zp**(pu(2) + pu(4)*sv + pu(9)/w) * 
+     >          (1.-zp)**(pu(3) + pu(5)*sv + pu(10)/w) 
+	   yu = yu * (1. + pu(6)*zp + pu(7)*zp**2 + pu(8)*zp**3) *
+     >               (1. + pu(11)/w + pu(12)/w**2)
 
 	   if(doing_hplus) then
 	      u1 = yf
@@ -437,6 +487,12 @@ c new PB fit using zp for pions. This is z * D
 	   db = u1
 	   s1 = yu
 	   sb = s1
+	   if(doing_pizero) then ! just get averge of pi+ and pi-
+	      u1 = (yf + yu) / 2.
+	      d1 = (yf + yu) / 2.
+	      ub = (yf + yu) / 2.
+	      d1 = (yf + yu) / 2.
+	   endif
  	elseif(doing_semika) then
 	   IHdss=2 ! Kaons, 1=Pions
 	   IOdss=1 ! NLO
@@ -447,56 +503,52 @@ c new PB fit using zp for pions. This is z * D
 	   endif
 	   call fDSS (IHdss,ICdss,IOdss, Zhad, Q2gev, 
      >       U1, UB, D1, DB, S1, SB, C1, B1, GL1)
-c	   write(6,*) 'cheesy poofs', zhad, u1, ub, d1, db, s1, sb
 	endif
 
-	dsigdz = (qu**2 * u    * u1 + 
-     >            qu**2 * ubar * ub +
-     >  	  qd**2 * d    * d1 + 
-     >            qd**2 * dbar * db + 
-     >  	  qs**2 * s    * s1 + 
-     >            qs**2 * sbar * sb)/sum_sq/zhad
-	dsigdzp = dsigdz
-	if(doing_deutsemi) then
-	   dsigdzn =(qu**2 * d    * u1 + 
-     >               qu**2 * dbar * ub +
-     >  	     qd**2 * u    * d1 + 
-     >               qd**2 * ubar * db + 
-     >  	     qs**2 * s    * s1 + 
-     >               qs**2 * sbar * sb)/sum_sq/zhad
-	   dsigdz = dsigdzp + dsigdzn
-	endif
+	dsigdz = (qu**2 * uA    * u1 + 
+     >            qu**2 * ubarA * ub +
+     >  	  qd**2 * dA    * d1 + 
+     >            qd**2 * dbarA * db + 
+     >  	  qs**2 * sA    * s1 + 
+     >            qs**2 * sbarA * sb)/sum_sq/zhad
+c	dsigdzp = dsigdz
+c	if(doing_deutsemi) then
+c	   dsigdzn =(qu**2 * d    * u1 + 
+c     >               qu**2 * dbar * ub +
+c     >  	     qd**2 * u    * d1 + 
+c     >               qd**2 * ubar * db + 
+c     >  	     qs**2 * s    * s1 + 
+c     >               qs**2 * sbar * sb)/sum_sq/zhad
+c	   dsigdz = dsigdzp + dsigdzn
+c	endif
 
-	sighad = dsigdz*b*exp(-b*pt2gev)/2./pi
-c	write(6,*) 'bad kitty', sighad
-
-C DJG: OK - I THINK I've got it right now.
-C DJG: Should be dsig/dOmega dE
-
-c	sige = 2.*alpha**2*(y**2/2. + 1. - y  - mtar*xbj*y/2./Eb)*
-c	1    (Eprime/1000.)/(Q2gev*y*(mtar/1000.)*(nu/1000.))
-c	2    * sum_sq
-
-c	F2 = xbj*sum_sq
-c	F1 = F2/2./xbj
-c
+	b =  1./ (0.120 * zhad**2 + 0.200)
+	sighad = Rhad_global(targA,zhad)*dsigdz*b*exp(-b*pt2gev)/2./pi
 
 	wsq = Mp_gev**2 + q2gev * (1./xbj -1.)
-	z8=1.
-	a8=1.
-	if(doing_deutsemi) a8=2.
-        call F1F2IN09(z8, a8, Q2gev, Wsq, F1, F2)  
+	z8=1.0
+	a8=1.0
+c Updated to F1F2IN21 (Eric Christy's 2021 fit)
+	call F1F2IN21(z8, a8, Q2gev, Wsq, F1, F2)
+	F1p=F1
+        F2p=F2
 
+	z8=0.0
+	a8=1.0
+	call F1F2IN21(z8, a8, Q2gev, Wsq, F1, F2)
+	F1n=F1
+        F2n=F2
+	
+        F1=(targZ*F1p+targN*F1n)*slacemcfit(targA,xbj)
+        F2=(targZ*F2p+targN*F2n)*slacemcfit(targA,xbj)
+	
+	
 	W1 = F1/(mtar/1000.)
 	W2 = F2/(nu/1000.)
 
 	sin2th2 = Q2/4./Eb/Eprime
 	cos2th2 = 1.-sin2th2
-c	if(do_fermi) then
-c	   W2coeff = (efer-abs(pfer)*pferz)*(efer-abs(pfer)*(pferx*Epx+pfery*Epy+pferz*Epz)/Eprime)/mtar**2 - sin2th2
-c	else
-	   W2coeff = cos2th2
-c	endif
+	W2coeff = cos2th2
 
 	sige = 4.*alpha**2*(Eprime/1000)**2/Q2gev**2 * ( W2*W2coeff + 2.*W1*sin2th2)
 
@@ -511,7 +563,6 @@ C This is just given by 1/omega * 2*p_h**2*cos(theta)
 
 C The 1.e6 converts from microbarn/GeV^2 to microbarn/MeV^2
 	sigma_eepiX = sigsemi*jacobian/1.e6
-
 
 * Note that there is an additional factor 'fac' included with the fermi-smeared cross
 * section.   This takes into account pieces in the flux factor that are neglected (=1) in
@@ -577,4 +628,53 @@ C momentum.  Get particle momentum from main.SP.p.delta
 
 	return
 
+	end
+
+*******************************************************************
+	real*8 function slacemcfit(A,x)
+
+	real*8 alpha,C,emc,A,x,Atmp
+
+	slacemcfit=1.0
+	Atmp=1.0
+	if(A.gt.2.0) then
+           Atmp=A
+           alpha = -0.070+2.189*x - 24.667*x**2 + 145.291*x**3
+     >        -497.237*x**4 + 1013.129*x**5 - 1208.393*x**6
+     >        +775.767*x**7 - 205.872*x**8
+c
+           C = exp( 0.017 + 0.018*log(x) + 0.005*log(x)**2)	
+           slacemcfit = C*Atmp**alpha
+        endif
+	return 
+	end
+*******************************************************************
+       real*8 function Rhad_global(A,z)
+       implicit none
+       real*8 A,z
+       real*8 Nzero,alphah,betah
+
+       real*8 Ahyd,Atmp
+
+	Ahyd=1.0
+      
+
+	if(A.eq.Ahyd) then
+	   Rhad_global=1.0
+	   return
+	endif
+
+	Nzero = 0.98883-0.0038309*A+0.10841E-4*A**2
+	alphah=0.31953E-01-0.18659E-02*A+0.51747E-05*A**2
+	if(A.lt.83.8) then
+	   Atmp=A
+	else
+	   Atmp=83.8
+	endif
+      
+	betah=0.85475E-02+0.12763E-02*Atmp-0.24451E-05*Atmp**2
+
+	Rhad_global=Nzero*z**alphah*(1-z)**betah
+
+	return
 	end

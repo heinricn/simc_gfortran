@@ -32,7 +32,7 @@
         real*8 epicm,ppicm,ppicmx,ppicmy,ppicmz		!p_hadron in C.M.
         real*8 ebeamcm,pbeamcm,pbeamcmx,pbeamcmy,pbeamcmz !p_beam in C.M.
         real*8 etarcm,ptarcm,ptarcmx,ptarcmy,ptarcmz	!p_fermi in C.M.
-        real*8 thetacm,phicm,phiqn,jacobian,jac_old
+        real*8 thetacm,phicm,phiqn,epscm,jacobian,jac_old
 	real*8 Wgev, Q2gev, E0, cthcm, sig0, fac1
 
 	real*8 sig_multipole,sig_blok,sig_param04,sig_param_3000,sig_param_2021
@@ -54,7 +54,7 @@ cdg	data low_w_flag /.FALSE./	!Assume high W kinematics to start
      &		epicm,ppicm,ppicmx,ppicmy,ppicmz,
      &		ebeamcm,pbeamcm,pbeamcmx,pbeamcmy,pbeamcmz,
      &		etarcm,ptarcm,ptarcmx,ptarcmy,ptarcmz,
-     &		thetacm,phicm,phiqn,jacobian,jac_old)
+     &		thetacm,phicm,phiqn,epscm,jacobian,jac_old)
 
 	main%thetacm = thetacm
 	main%phicm = phicm
@@ -521,7 +521,7 @@ CDG For now assume sigL(pi+)=sigL(pi-)
 * Purpose:
 * Fit that reproduces Fpi1 (larger Q2)and Fpi2 and Brauel separated xsec data.
 * while reproducing Bebek unseparated data.
-* The Fpi1 low Q2 data isn't fit terribly well, but not so bad (mostly, sigma_l is
+* The Fpi1 low Q2 data is not fit terribly well, but not so bad (mostly, sigma_l is
 * a little big).
 * Fit gives dsigma/dt/dphi_cm, which is returned as sig_param_3000 [ub/MeV^2-rad].
 

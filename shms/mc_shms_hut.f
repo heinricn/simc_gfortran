@@ -77,7 +77,7 @@ C Initialize ok_hut to zero
 
 	ok_hut = .false.
 c
-	resmult= 1.0
+	resmult= 3.5
 
 
 C Initialize the xdc and ydc arrays to zero

@@ -30,37 +30,33 @@ set -e  # exit on first error
 SIMC_DIR="$(pwd)"
 
 # Path to SIMC input files
-SIMC_INFILES_DIR="${SIMC_DIR}/infiles"
+SIMC_INFILES_DIR="${SIMC_DIR}/input"
 
 # Path to SIMC ROOT tree util
 SIMC_ROOT_TREE_DIR="${SIMC_DIR}/util/root_tree"
 
 # Where SIMC writes .hist files
-SIMC_OUTFILES_DIR="${SIMC_DIR}/outfiles"
+SIMC_OUTFILES_DIR="${SIMC_DIR}/worksim"
 
 # Where SIMC writes .root tree files
 SIMC_WORK_DIR="${SIMC_DIR}/worksim"
 
 # Directory where recon_hcana.C / recon_hcana.h live
-RECON_DIR="${SIMC_DIR}/util/recon_hcana"
+RECON_DIR="${SIMC_DIR}/recon_hcana"
 
 ############################
 # PARSE ARGUMENTS
 ############################
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
   echo "Usage: $0 <stem> <reaction> [hadron_type] [Earm_HMS]"
   echo "  <stem>        = SIMC basename (no .inp)"
   echo "  <reaction>    = heep | sidis | rho | delta | exclusive | ..."
-  echo "  [hadron_type] = mpi (default) or mk"
-  echo "  [Earm_HMS]    = 1 (default: electron in HMS) or 0 (electron in SHMS)"
   exit 1
 fi
 
 STEM="$1"
 REACTION="$2"
-HADRON_TYPE="${3:-mpi}"
-EARM_HMS_INT="${4:-1}"
 
 # Map 1/0 → kTRUE/kFALSE for ROOT
 if [ "$EARM_HMS_INT" -eq 0 ]; then
@@ -74,8 +70,6 @@ echo " Running SIMC + recon_hcana"
 echo "-----------------------------------------"
 echo "  STEM        = ${STEM}"
 echo "  REACTION    = ${REACTION}"
-echo "  HADRON_TYPE = ${HADRON_TYPE}"
-echo "  Earm_HMS    = ${EARM_FLAG}  (1=HMS, 0=SHMS)"
 echo "========================================="
 
 ############################
@@ -165,7 +159,14 @@ if [ ! -f "recon_hcana.C" ]; then
   exit 1
 fi
 
-root -l -b -q "recon_hcana.C+(\"${STEM}\",\"${REACTION}\",\"${HADRON_TYPE}\",${EARM_FLAG})"
+#echo "root -l -b -q \"recon_hcana.C+(\"${STEM}\",\"${REACTION}\")\" "
+#root -l -b -q "recon_hcana.C+(\"${STEM}\",\"${REACTION}\")"
+root -b << EOF
+.L recon_hcana.C
+.L recon_hcana.h
+recon_hcana("${STEM}", "${REACTION}")
+.q
+EOF
 
 RETVAL=$?
 

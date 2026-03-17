@@ -97,7 +97,7 @@ if [ ! -x "./convert_inputfile.sh" ]; then
   exit 1
 fi
 
-./convert_inputfile.sh "${STEM}.inp"
+#./convert_inputfile.sh "${STEM}.inp"
 
 ############################
 # 2. Build ROOT tree code
@@ -107,8 +107,8 @@ echo
 echo ">>> [2] Building SIMC ROOT tree (make clean; make)"
 cd "${SIMC_ROOT_TREE_DIR}"
 
-make clean
-make
+#make clean
+#make
 
 ############################
 # 3. Run SIMC to make .hist/.root
@@ -123,7 +123,7 @@ if [ ! -x "./run_simc_tree" ]; then
   exit 1
 fi
 
-./run_simc_tree "${STEM}"
+#./run_simc_tree "${STEM}"
 
 # Expect .hist and .root now:
 HIST_FILE="${SIMC_OUTFILES_DIR}/${STEM}.hist"
